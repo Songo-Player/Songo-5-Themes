@@ -1,1 +1,5 @@
 __pycache__/
+# Built by build_theme_site.py and publish_releases.py; the workflow publishes them.
+/docs/
+/_site/
+/releases.json

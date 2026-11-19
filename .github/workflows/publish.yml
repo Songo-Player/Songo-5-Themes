@@ -1,0 +1,69 @@
+# Releases new and updated themes and deploys the theme page to GitHub Pages.
+#
+# On every push to main, each packaged theme gets its release (theme-<Dir>,
+# holding <Dir>.zip and <Dir>-source.zip) created, or its files replaced if the
+# theme has changed, keeping its download count. Then the page is rebuilt to
+# link to the release files. It also runs every hour so the download counts on
+# the page and in themes.json stay fresh.
+#
+# Needs Settings > Pages > Source set to "GitHub Actions".
+name: Publish themes
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write   # create releases
+  pages: write      # deploy the page
+  id-token: write
+
+# One run at a time, so two runs can't update the same release together.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The themes built into Songo, which the page lists without downloads.
+      - name: Check out Songo's built-in themes
+        uses: actions/checkout@v4
+        with:
+          repository: Songo-Player/Songo-5
+          path: .songo5
+          sparse-checkout: internal_themes
+          filter: blob:none
+
+      - name: Release new and updated themes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          python3 publish_releases.py
+          --repo "${{ github.repository }}"
+          --target "${{ github.sha }}"
+          --site-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          --out "$RUNNER_TEMP/releases.json"
+
+      - name: Build the page
+        run: >
+          python3 build_theme_site.py
+          --out _site
+          --internal .songo5/internal_themes
+          --releases "$RUNNER_TEMP/releases.json"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
