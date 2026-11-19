@@ -19,16 +19,25 @@ says they're included in Songo instead.
     docs/themes/<Dir>.png    its preview image (builtin-<Dir>.png for a
                              built-in theme)
     docs/.nojekyll           so GitHub Pages serves the files as they are
+    docs/.gdignore           so Godot leaves the folder alone inside Songo-5
 
 docs/themes/ is rebuilt from scratch on every run. The zips are written with
 fixed timestamps, so running this again without changing a theme leaves them
-byte for byte the same and they don't show up as changes in git.
+byte for byte the same.
 
-To publish: commit docs/ and, in the repo's Settings > Pages, deploy from a
-branch with the folder set to /docs. Rerun this after packing themes.
+With --releases (the file publish_releases.py writes), themes are downloaded
+from their GitHub releases instead: the page links to the release files, zips
+none itself, and shows each theme's download count. The page also refreshes
+the counts from GitHub when it's opened, and adds one when Theme is clicked.
+
+Publishing is automatic: the repo's GitHub Actions workflow
+(.github/workflows/publish.yml) releases new theme versions and deploys the
+page on every push to main, and refreshes the counts every few hours. Run this
+yourself to preview the page; docs/ is ignored by git.
 
 Usage (Python 3.8+, standard library only):
     python3 build_theme_site.py
+    python3 build_theme_site.py --releases releases.json
     python3 build_theme_site.py --out site --title "Songo Themes"
     python3 build_theme_site.py --help
 """
@@ -51,6 +60,8 @@ DEFAULT_INTRO = (
     "Each one restyles the whole app: menus, lists, the now playing screen and more."
 )
 DEFAULT_REPO_URL = "https://github.com/Songo-Player/Songo-5"
+# Where the themes are released, for the page's live download counts.
+DEFAULT_RELEASE_REPO = "Songo-Player/Songo-5-Themes"
 
 # The files a packaged theme folder ships with. Anything else in the folder
 # (e.g. Godot's preview.png.import) goes in the zip too, as packaged.
@@ -206,6 +217,10 @@ def esc(value) -> str:
     return html.escape(str(value), quote=True)
 
 
+def count_text(count: int) -> str:
+    return f"{count:,}"
+
+
 ICON_USER = ('<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="4.5"/>'
              '<path d="M3 21c0-4.4 4-7.5 9-7.5s9 3.1 9 7.5z"/></svg>')
 
@@ -242,16 +257,28 @@ def render_card(theme: dict) -> str:
 
     description = f'<p class="desc">{esc(theme["description"])}</p>' if theme["description"] else ""
 
+    # How many times the packaged theme has been downloaded from its releases.
+    # The page's script keeps it up to date, keyed by the release file's name.
+    count_html = ""
+    if theme.get("downloads") is not None:
+        count_html = (f'<p class="meta"><span>Downloads: <span class="dl-count" data-asset="{esc(theme["id"])}.zip">'
+                      f'{count_text(theme["downloads"])}</span></span></p>')
+
     if theme["builtin"]:
         # Ships with the app: nothing to download.
         downloads = '<p class="included">Included in Songo</p>'
     else:
         # A small label, then buttons side by side, as on Songo's settings pages.
-        buttons = (f'<a class="download" href="themes/{esc(theme["id"])}.zip" download '
+        # Release files are on another site, where the download attribute
+        # does nothing; GitHub serves them as downloads anyway.
+        released = theme.get("release") is not None
+        attr = "" if released else " download"
+        asset = f' data-asset="{esc(theme["id"])}.zip"' if released else ""
+        buttons = (f'<a class="download" href="{esc(theme["download_href"])}"{attr}{asset} '
                    f'title="The packaged theme, ready to install">'
                    f'Theme <span class="size">{esc(theme["zip_size_text"])}</span></a>')
-        if theme["source_dir"]:
-            buttons += (f'<a class="download" href="themes/{esc(theme["id"])}-source.zip" download '
+        if theme.get("source_href"):
+            buttons += (f'<a class="download" href="{esc(theme["source_href"])}"{attr} '
                         f'title="The theme\'s editable source folder">'
                         f'Source <span class="size">{esc(theme["source_size_text"])}</span></a>')
         downloads = (f'<section class="downloads" aria-label="Download {esc(theme["name"])}">'
@@ -271,6 +298,7 @@ def render_card(theme: dict) -> str:
         </header>
         <p class="meta">{ICON_USER}{esc(by)}</p>
         {ai_html}
+        {count_html}
         {description}
         {tags_html}
         {downloads}
@@ -395,6 +423,7 @@ body {
   color: var(--dim); font-variant-numeric: tabular-nums;
 }
 .meta { margin: 0; display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 0.95rem; }
+.dl-count { color: var(--text); font-variant-numeric: tabular-nums; }
 .icon { width: 18px; height: 18px; fill: currentColor; flex: none; }
 .desc { margin: 2px 0 0; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 2px 0 0; padding: 0; }
@@ -631,6 +660,73 @@ PAGE_JS = """
 """
 
 
+# Download counts: the page is built with the counts as they were then. Opened,
+# it asks GitHub for the current ones (every release's files and how often
+# each was downloaded, kept for ten minutes so reloading doesn't use up the
+# hourly limit GitHub puts on these requests) and adds up each theme's package
+# downloads over all its versions. Clicking Theme adds one straight away.
+COUNT_JS = """
+(function () {
+  var repo = document.body.dataset.releaseRepo;
+  var counters = Array.prototype.slice.call(document.querySelectorAll('.dl-count'));
+  if (!repo || !counters.length) return;
+  var key = 'songo-theme-downloads:' + repo;
+  var maxAge = 10 * 60 * 1000;
+  var totals = null;
+
+  function read(counter) { return Number(counter.textContent.replace(/[^0-9]/g, '')) || 0; }
+  // Counts only go up: never show less than the page already does.
+  function show() {
+    counters.forEach(function (counter) {
+      var n = totals[counter.dataset.asset];
+      if (typeof n === 'number' && n > read(counter)) counter.textContent = n.toLocaleString('en-US');
+    });
+  }
+  function save() {
+    try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), totals: totals })); } catch (e) {}
+  }
+
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest('a.download[data-asset]');
+    if (!link) return;
+    var asset = link.dataset.asset;
+    counters.forEach(function (counter) {
+      if (counter.dataset.asset !== asset) return;
+      var n = read(counter) + 1;
+      counter.textContent = n.toLocaleString('en-US');
+      if (totals) totals[asset] = n;
+    });
+    if (totals) save();
+  });
+
+  try {
+    var cached = JSON.parse(sessionStorage.getItem(key) || 'null');
+    if (cached && Date.now() - cached.at < maxAge) { totals = cached.totals; show(); return; }
+  } catch (e) {}
+
+  var sums = {};
+  function fetchPage(page) {
+    fetch('https://api.github.com/repos/' + repo + '/releases?per_page=100&page=' + page,
+          { headers: { Accept: 'application/vnd.github+json' } })
+      .then(function (response) { if (!response.ok) throw new Error(response.status); return response.json(); })
+      .then(function (releases) {
+        releases.forEach(function (release) {
+          (release.assets || []).forEach(function (asset) {
+            sums[asset.name] = (sums[asset.name] || 0) + asset.download_count;
+          });
+        });
+        if (releases.length === 100 && page < 10) return fetchPage(page + 1);
+        totals = sums;
+        save();
+        show();
+      })
+      .catch(function () {});  // offline or rate limited: the built-in counts stay
+  }
+  fetchPage(1);
+})();
+"""
+
+
 def render_filters(themes: list) -> str:
     """The filter panel. It starts hidden; the page's script shows it."""
     # Most used tags and most credited people first.
@@ -670,7 +766,7 @@ def render_filters(themes: list) -> str:
   </section>"""
 
 
-def render_page(themes: list, title: str, intro: str, repo_url: str) -> str:
+def render_page(themes: list, title: str, intro: str, repo_url: str, release_repo: str) -> str:
     cards = "".join(render_card(t) for t in themes)
     filters = render_filters(themes)
     # The page's title, in the top bar like the app's own header. It links to
@@ -692,7 +788,7 @@ def render_page(themes: list, title: str, intro: str, repo_url: str) -> str:
 {FONTS}
 <style>{PAGE_CSS}</style>
 </head>
-<body>
+<body data-release-repo="{esc(release_repo)}">
 <header class="topbar">
   {wordmark}
   <span class="count">{count} theme{plural}</span>
@@ -722,6 +818,7 @@ def render_page(themes: list, title: str, intro: str, repo_url: str) -> str:
   <span class="built">Built {built} &middot; <a href="themes.json">themes.json</a></span>
 </footer>
 <script>{PAGE_JS}</script>
+<script>{COUNT_JS}</script>
 </body>
 </html>
 """
@@ -738,10 +835,14 @@ def manifest_entry(theme: dict) -> dict:
         "description": theme["description"],
         "tags": theme["tags"],
         "builtin": theme["builtin"],
-        "download": None if theme["builtin"] else f"themes/{theme['id']}.zip",
+        # Links to the release files when the themes are released, or to
+        # zips next to this file. Clients can count on "download" either way.
+        "download": theme.get("download_href"),
         "download_bytes": theme.get("zip_size"),
-        "source": f"themes/{theme['id']}-source.zip" if theme["source_dir"] else None,
+        "source": theme.get("source_href"),
         "source_bytes": theme.get("source_size"),
+        "release": theme.get("release"),
+        "downloads": theme.get("downloads"),
         "preview": f"themes/{theme['slug']}.png" if theme["has_preview"] else None,
     }
 
@@ -763,6 +864,12 @@ def main() -> int:
                         help="the page's description, for search engines and link previews")
     parser.add_argument("--repo-url", default=DEFAULT_REPO_URL,
                         help="where the title in the top bar links to (Songo itself); empty for no link")
+    parser.add_argument("--releases", type=Path,
+                        help="release details from publish_releases.py: link to the release files and show "
+                             "download counts, instead of zipping the themes into the site")
+    parser.add_argument("--release-repo", default=None,
+                        help="GitHub repo the page fetches live download counts from (default: the repo in "
+                             f"--releases, else {DEFAULT_RELEASE_REPO}); empty to turn it off")
     args = parser.parse_args()
 
     packaged = args.packaged.resolve()
@@ -796,24 +903,51 @@ def main() -> int:
         shutil.rmtree(assets)
     assets.mkdir(parents=True)
 
+    released = {}
+    release_repo = DEFAULT_RELEASE_REPO
+    if args.releases:
+        data = json.loads(args.releases.read_text(encoding="utf-8"))
+        released = data.get("themes", {})
+        release_repo = data.get("repo") or release_repo
+    if args.release_repo is not None:
+        release_repo = args.release_repo
+
     for theme in themes:
         if theme["has_preview"]:
             shutil.copyfile(theme["dir"] / "preview.png", assets / f"{theme['slug']}.png")
         if theme["builtin"]:
             print(f"  {theme['id']}: {theme['name']} {theme['version']} (built in)")
             continue
-        theme["zip_size"] = write_zip(theme["dir"], theme["id"], assets / f"{theme['id']}.zip")
+        release = released.get(theme["id"])
+        if release:
+            theme["release"] = release["tag"]
+            theme["downloads"] = release.get("downloads", 0)
+            theme["download_href"], theme["zip_size"] = release["download_url"], release["download_bytes"]
+            if release.get("source_url"):
+                theme["source_href"], theme["source_size"] = release["source_url"], release["source_bytes"]
+        else:
+            if args.releases:
+                print(f"  {theme['id']}: not released, zipping it into the site instead", file=sys.stderr)
+            theme["download_href"] = f"themes/{theme['id']}.zip"
+            theme["zip_size"] = write_zip(theme["dir"], theme["id"], assets / f"{theme['id']}.zip")
+            if theme["source_dir"]:
+                theme["source_href"] = f"themes/{theme['id']}-source.zip"
+                theme["source_size"] = write_zip(theme["source_dir"], theme["id"], assets / f"{theme['id']}-source.zip")
         theme["zip_size_text"] = human_size(theme["zip_size"])
-        if theme["source_dir"]:
-            theme["source_size"] = write_zip(theme["source_dir"], theme["id"], assets / f"{theme['id']}-source.zip")
+        if theme.get("source_href"):
             theme["source_size_text"] = human_size(theme["source_size"])
-        source = f", source {theme['source_size_text']}" if theme["source_dir"] else ", no source"
-        print(f"  {theme['id']}: {theme['name']} {theme['version']} ({theme['zip_size_text']}{source})")
+        source = f", source {theme['source_size_text']}" if theme.get("source_href") else ", no source"
+        where = f", from {theme['release']}, {theme['downloads']} downloads" if theme.get("release") else ""
+        print(f"  {theme['id']}: {theme['name']} {theme['version']} ({theme['zip_size_text']}{source}{where})")
 
-    (out / "index.html").write_text(render_page(themes, args.title, args.intro, args.repo_url), encoding="utf-8")
+    (out / "index.html").write_text(render_page(themes, args.title, args.intro, args.repo_url, release_repo),
+                                    encoding="utf-8")
     (out / "themes.json").write_text(json.dumps({"themes": [manifest_entry(t) for t in themes]},
                                                 indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
+    # Keeps Godot from importing the previews when the site is built inside
+    # the Songo-5 project.
+    (out / ".gdignore").write_text("", encoding="utf-8")
     print(f"Wrote {out / 'index.html'} with {len(themes)} theme{'s' if len(themes) != 1 else ''}")
     return 0
 
