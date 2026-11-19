@@ -255,13 +255,6 @@ def render_card(theme: dict) -> str:
 
     description = f'<p class="desc">{esc(theme["description"])}</p>' if theme["description"] else ""
 
-    # How many times the packaged theme has been downloaded from its releases.
-    # The page's script keeps it up to date, keyed by the release file's name.
-    count_html = ""
-    if theme.get("downloads") is not None:
-        count_html = (f'<p class="meta"><span>Downloads: <span class="dl-count" data-asset="{esc(theme["id"])}.zip">'
-                      f'{count_text(theme["downloads"])}</span></span></p>')
-
     if theme["builtin"]:
         # Ships with the app: nothing to download.
         downloads = '<p class="included">Included in Songo</p>'
@@ -279,8 +272,16 @@ def render_card(theme: dict) -> str:
             buttons += (f'<a class="download" href="{esc(theme["source_href"])}"{attr} '
                         f'title="The theme\'s editable source folder">'
                         f'Source <span class="size">{esc(theme["source_size_text"])}</span></a>')
+        # Over the buttons: how many times the packaged theme has been
+        # downloaded from its releases, once it's released. Clicking Theme
+        # adds one, keyed by the release file's name.
+        label = "Download"
+        if theme.get("downloads") is not None:
+            count = theme["downloads"]
+            label = (f'Downloaded <span class="dl-count" data-asset="{esc(theme["id"])}.zip">{count_text(count)}</span> '
+                     f'<span class="dl-unit">{"time" if count == 1 else "times"}</span>')
         downloads = (f'<section class="downloads" aria-label="Download {esc(theme["name"])}">'
-                     f'<h3>Download</h3><div class="buttons">{buttons}</div></section>')
+                     f'<h3>{label}</h3><div class="buttons">{buttons}</div></section>')
     # Read by the page's filters: tags (lower case, split on "|" so a tag can
     # have spaces) and the AI usage level, empty when it isn't stated.
     tag_attr = esc("|".join(t.lower() for t in theme["tags"]))
@@ -296,7 +297,6 @@ def render_card(theme: dict) -> str:
         </header>
         <p class="meta">{ICON_USER}{esc(by)}</p>
         {ai_html}
-        {count_html}
         {description}
         {tags_html}
         {downloads}
@@ -421,7 +421,7 @@ body {
   color: var(--dim); font-variant-numeric: tabular-nums;
 }
 .meta { margin: 0; display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 0.95rem; }
-.dl-count { color: var(--text); font-variant-numeric: tabular-nums; }
+.dl-count { font-variant-numeric: tabular-nums; }
 .icon { width: 18px; height: 18px; fill: currentColor; flex: none; }
 .desc { margin: 2px 0 0; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 2px 0 0; padding: 0; }
@@ -669,6 +669,8 @@ COUNT_JS = """
       if (counter.dataset.asset !== link.dataset.asset) return;
       var n = (Number(counter.textContent.replace(/[^0-9]/g, '')) || 0) + 1;
       counter.textContent = n.toLocaleString('en-US');
+      var unit = counter.parentNode.querySelector('.dl-unit');
+      if (unit) unit.textContent = n === 1 ? 'time' : 'times';
     });
   });
 })();
