@@ -340,9 +340,9 @@ body {
 [hidden] { display: none !important; }
 /* Filters: a dark panel under the summary holding a tag search, the author
    and AI usage pickers (styled like the boxes on Songo's settings pages),
-   the tags as pills, and a status line. It sticks under the top bar while
-   the themes scroll past, a small gap below it; stuck, the tags fold to one row and the panel
-   never grows past the screen. The page's script sets --topbar-h and
+   the tags as pills in one row that scrolls sideways, and a status line. It
+   sticks under the top bar while the themes scroll past, a small gap below
+   it, and never grows past the screen. The page's script sets --topbar-h and
    --sticky-h to the bar's and the panel's heights. */
 .filters {
   --sticky-gap: 8px;
@@ -368,12 +368,21 @@ body {
 .field.search input { width: 100%; min-width: 0; }
 .field input::placeholder { color: #8f8a96; }
 .field select { cursor: pointer; }
-.field input:focus-visible, .field select:focus-visible, .clear:focus-visible, .more:focus-visible {
+.field input:focus-visible, .field select:focus-visible, .clear:focus-visible {
   outline: 2px solid rgb(255 255 255 / 0.75); outline-offset: 1px;
 }
-.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.tag-list.collapsed { max-height: 76px; overflow: hidden; }
-.filters.stuck .tag-list.collapsed { max-height: 34px; }
+/* Tags never wrap: a row that scrolls sideways (the filter panel's and each
+   card's), with a thin, faint scrollbar under it. */
+.tag-list, .tags {
+  display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / 0.22) transparent;
+}
+.tag-list > *, .tags > * { flex: none; white-space: nowrap; }
+.tag-list::-webkit-scrollbar, .tags::-webkit-scrollbar { height: 6px; }
+.tag-list::-webkit-scrollbar-track, .tags::-webkit-scrollbar-track { background: transparent; }
+.tag-list::-webkit-scrollbar-thumb, .tags::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.22); border-radius: 3px; }
+.tag-list::-webkit-scrollbar-thumb:hover, .tags::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.4); }
+.tag-list { gap: 8px; padding-bottom: 6px; }
 /* Phones: the dropdowns' first options say what they are, so their labels
    are left to screen readers and the two sit side by side. */
 @media (max-width: 559px) {
@@ -394,10 +403,6 @@ body {
 .tag-list button:hover { background: #432470; }
 .tag-list button:focus-visible { outline: none; border-color: var(--ring); }
 .filter-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-height: 34px; }
-.more {
-  background: none; border: 0; padding: 4px 0; color: var(--text); cursor: pointer;
-  font: 500 0.9rem var(--sans); text-decoration: underline; text-underline-offset: 3px;
-}
 .status { margin: 0; color: var(--dim); font-size: 0.9rem; flex: 1; }
 .clear { cursor: pointer; padding: 5px 12px; font-size: 0.9rem; }
 .clear:hover { background: #262626; }
@@ -424,7 +429,7 @@ body {
 .dl-count { font-variant-numeric: tabular-nums; }
 .icon { width: 18px; height: 18px; fill: currentColor; flex: none; }
 .desc { margin: 2px 0 0; }
-.tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 2px 0 0; padding: 0; }
+.tags { gap: 6px; list-style: none; margin: 2px 0 0; padding: 0 0 4px; }
 .tags li { background: var(--pill); border-radius: 999px; padding: 3px 12px; font-size: 0.8rem; color: var(--dim); }
 /* A small label over buttons like those on Songo's settings pages (e.g.
    Data and Storage): near-black boxes with a thin light grey outline and
@@ -487,13 +492,11 @@ PAGE_JS = """
   var author = document.getElementById('author-filter');
   var ai = document.getElementById('ai-filter');
   var clear = document.getElementById('clear-filters');
-  var more = document.getElementById('more-tags');
   var status = document.getElementById('filter-status');
   var noTags = document.getElementById('no-tag-matches');
   var empty = document.getElementById('no-matches');
   var foot = panel.querySelector('.filter-foot');
   var selected = [];
-  var expanded = false;
   // The space between the top bar and the stuck panel (--sticky-gap in the CSS).
   var gap = parseFloat(getComputedStyle(panel).getPropertyValue('--sticky-gap')) || 0;
 
@@ -511,7 +514,7 @@ PAGE_JS = """
   }
 
   // The row under the tags only takes space when something in it is showing.
-  function updateFoot() { foot.hidden = more.hidden && clear.hidden && !status.textContent; }
+  function updateFoot() { foot.hidden = clear.hidden && !status.textContent; }
 
   function apply(userChange) {
     var max = ai.value === '' ? null : Number(ai.value);
@@ -525,11 +528,12 @@ PAGE_JS = """
       card.hidden = !match;
       if (match) shown++;
     });
-    // Selected tags move to the front so they stay in view when the list is folded.
+    // Selected tags move to the front, and the row scrolls back to show them.
     tagButtons.forEach(function (button) { button.setAttribute('aria-pressed', isSelected(button.dataset.tag)); });
     tagButtons.slice().sort(function (a, b) {
       return (isSelected(b.dataset.tag) - isSelected(a.dataset.tag)) || (a.dataset.order - b.dataset.order);
     }).forEach(function (button) { tagList.appendChild(button); });
+    if (userChange) tagList.scrollLeft = 0;
     var filtering = selected.length > 0 || person !== '' || max !== null;
     clear.hidden = !filtering;
     status.textContent = filtering ? 'Showing ' + shown + ' of ' + cards.length + ' themes' : '';
@@ -554,19 +558,7 @@ PAGE_JS = """
       if (match) visible++;
     });
     noTags.hidden = visible > 0 || tagButtons.length === 0;
-    // Searching shows every match; otherwise fold (to two rows, or one while
-    // stuck) unless expanded.
-    if (query !== '') {
-      tagList.classList.remove('collapsed');
-      more.hidden = true;
-    } else {
-      tagList.classList.add('collapsed');
-      var overflows = tagList.scrollHeight > tagList.clientHeight + 1;
-      tagList.classList.toggle('collapsed', !expanded);
-      more.hidden = !overflows;
-      more.textContent = expanded ? 'Show fewer tags' : 'Show all ' + tagButtons.length + ' tags';
-      more.setAttribute('aria-expanded', expanded);
-    }
+    tagList.scrollLeft = 0;
     updateFoot();
     measure();
   }
@@ -634,12 +626,24 @@ PAGE_JS = """
     showTags();
     apply(true);
   });
-  more.addEventListener('click', function () { expanded = !expanded; showTags(); });
   window.addEventListener('resize', showTags);
+
+  // A mouse wheel over a tag row scrolls it sideways while there's more of it
+  // to see that way, and scrolls the page as usual once it reaches the end.
+  Array.prototype.forEach.call(document.querySelectorAll('.tag-list, .tags'), function (row) {
+    row.addEventListener('wheel', function (event) {
+      if (event.deltaX !== 0 || event.deltaY === 0 || row.scrollWidth <= row.clientWidth) return;
+      var atStart = row.scrollLeft <= 0;
+      var atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 1;
+      if ((event.deltaY < 0 && atStart) || (event.deltaY > 0 && atEnd)) return;
+      row.scrollLeft += event.deltaY;
+      event.preventDefault();
+    }, { passive: false });
+  });
 
   // Stuck once the spot just above the panel has scrolled up past where the
   // panel sticks. Checked on every scroll: it's one position read, and the
-  // tag list is only refolded when the state actually changes.
+  // panel is only remeasured when the state actually changes.
   function checkStuck() {
     var stuck = sentinel.getBoundingClientRect().top < topbar.offsetHeight + gap;
     if (stuck !== panel.classList.contains('stuck')) {
@@ -706,10 +710,9 @@ def render_filters(themes: list) -> str:
       <label class="field"><span class="label">Author</span> <select id="author-filter">{author_options}</select></label>
       <label class="field"><span class="label">AI usage</span> <select id="ai-filter">{ai_options}</select></label>
     </div>
-    <div class="tag-list collapsed" id="tag-list" role="group" aria-label="Tags"{"" if tags else " hidden"}>{tag_buttons}</div>
+    <div class="tag-list" id="tag-list" role="group" aria-label="Tags"{"" if tags else " hidden"}>{tag_buttons}</div>
     <p class="no-tags" id="no-tag-matches" hidden>No tags match.</p>
     <div class="filter-foot">
-      <button type="button" class="more" id="more-tags" aria-controls="tag-list" hidden></button>
       <p class="status" id="filter-status" aria-live="polite"></p>
       <button type="button" class="clear" id="clear-filters" hidden>Clear filters</button>
     </div>
