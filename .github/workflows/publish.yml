@@ -1,10 +1,10 @@
-# Releases new theme versions and deploys the theme page to GitHub Pages.
+# Releases new and updated themes and deploys the theme page to GitHub Pages.
 #
-# On every push to main, each packaged theme whose version has no release yet
-# gets one (tagged <Dir>-v<version>, with <Dir>.zip and <Dir>-source.zip), and
-# the page is rebuilt to link to the release files. Every six hours it runs
-# again so the download counts baked into the page and themes.json stay fresh;
-# the page also fetches live counts when it's opened.
+# On every push to main, each packaged theme gets its release (theme-<Dir>,
+# holding <Dir>.zip and <Dir>-source.zip) created, or its files replaced if the
+# theme has changed, keeping its download count. Then the page is rebuilt to
+# link to the release files. It also runs every hour so the download counts on
+# the page and in themes.json stay fresh.
 #
 # Needs Settings > Pages > Source set to "GitHub Actions".
 name: Publish themes
@@ -13,7 +13,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "23 */6 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -21,7 +21,7 @@ permissions:
   pages: write      # deploy the page
   id-token: write
 
-# One run at a time, so two pushes close together can't both create a release.
+# One run at a time, so two runs can't update the same release together.
 concurrency:
   group: publish
   cancel-in-progress: false
@@ -44,7 +44,7 @@ jobs:
           sparse-checkout: internal_themes
           filter: blob:none
 
-      - name: Release new theme versions
+      - name: Release new and updated themes
         env:
           GH_TOKEN: ${{ github.token }}
         run: >
