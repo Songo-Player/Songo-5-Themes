@@ -329,7 +329,7 @@ body {
   background: var(--bar); display: flex; align-items: center; justify-content: space-between;
   gap: 12px; padding: 10px max(16px, calc((100% - 1120px) / 2 + 20px));
 }
-.topbar { position: sticky; top: 0; z-index: 3; padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
+.topbar { padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
 .brand { margin: 0; font-size: inherit; min-width: 0; }
 .wordmark { font: 700 1.6rem/1 var(--mono); letter-spacing: 0.01em; color: var(--text); text-decoration: none; }
 .topbar .count {
@@ -338,35 +338,31 @@ body {
 }
 .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 28px 20px 48px; flex: 1; }
 [hidden] { display: none !important; }
-/* Filters: a dark panel under the summary holding a tag search, the author
-   and AI usage pickers (styled like the boxes on Songo's settings pages),
-   the tags as pills in one row that scrolls sideways, and a status line. It
-   sticks under the top bar while the themes scroll past, a small gap below
-   it, and never grows past the screen. The page's script sets --topbar-h and
-   --sticky-h to the bar's and the panel's heights. */
+/* Filters: a dark panel holding the author and AI usage pickers (styled like
+   the boxes on Songo's settings pages), the tags as pills in one row that
+   scrolls sideways, and a status line. It sticks to the top of the screen,
+   a small gap below the edge, while the themes scroll past, and never grows
+   past the screen. The page's script sets --sticky-h to the panel's height. */
 .filters {
   --sticky-gap: 8px;
-  position: sticky; top: calc(var(--topbar-h, 50px) + var(--sticky-gap)); z-index: 2;
+  position: sticky; top: calc(var(--sticky-gap) + env(safe-area-inset-top, 0px)); z-index: 2;
   background: rgb(35 28 45 / 0.97); border: 2px solid #ffffff; border-radius: 10px; padding: 14px 16px;
   margin: 0 0 22px;
   display: grid; gap: 12px;
 }
 .filters.stuck {
   box-shadow: 0 10px 24px rgb(0 0 0 / 0.35);
-  max-height: calc(100vh - var(--topbar-h, 50px) - 2 * var(--sticky-gap)); overflow-y: auto; overscroll-behavior: contain;
+  max-height: calc(100vh - 2 * var(--sticky-gap)); overflow-y: auto; overscroll-behavior: contain;
 }
 .filters-sentinel { height: 1px; margin-bottom: -1px; }
 .card { scroll-margin-top: calc(var(--sticky-h, 60px) + 24px); }
 .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
 .field { display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 0.9rem; }
-.field.search { flex: 1 1 240px; }
 .field select { max-width: 14em; }
 .field input, .field select, .clear {
   font: 400 0.95rem/1.3 var(--sans); color: #dfdfdf; background: #141414;
   border: 1px solid #cccccc; border-radius: 3px; padding: 6px 10px;
 }
-.field.search input { width: 100%; min-width: 0; }
-.field input::placeholder { color: #8f8a96; }
 .field select { cursor: pointer; }
 .field input:focus-visible, .field select:focus-visible, .clear:focus-visible {
   outline: 2px solid rgb(255 255 255 / 0.75); outline-offset: 1px;
@@ -387,7 +383,6 @@ body {
    are left to screen readers and the two sit side by side. */
 @media (max-width: 559px) {
   .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .field.search { grid-column: 1 / -1; }
   .field .label {
     position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
   }
@@ -406,7 +401,6 @@ body {
 .status { margin: 0; color: var(--dim); font-size: 0.9rem; flex: 1; }
 .clear { cursor: pointer; padding: 5px 12px; font-size: 0.9rem; }
 .clear:hover { background: #262626; }
-.no-tags { margin: 0; color: var(--dim); font-size: 0.9rem; }
 .empty { background: var(--panel); border-radius: 10px; padding: 28px 20px; text-align: center; color: var(--dim); }
 .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
 .card {
@@ -482,22 +476,19 @@ PAGE_JS = """
   if (!panel) return;
   panel.hidden = false;
   var root = document.documentElement;
-  var topbar = document.querySelector('.topbar');
   var sentinel = document.getElementById('filters-sentinel');
   var grid = document.querySelector('.grid');
   var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
   var tagList = document.getElementById('tag-list');
   var tagButtons = Array.prototype.slice.call(tagList.querySelectorAll('button'));
-  var search = document.getElementById('tag-search');
   var author = document.getElementById('author-filter');
   var ai = document.getElementById('ai-filter');
   var clear = document.getElementById('clear-filters');
   var status = document.getElementById('filter-status');
-  var noTags = document.getElementById('no-tag-matches');
   var empty = document.getElementById('no-matches');
   var foot = panel.querySelector('.filter-foot');
   var selected = [];
-  // The space between the top bar and the stuck panel (--sticky-gap in the CSS).
+  // The space between the top of the screen and the stuck panel (--sticky-gap in the CSS).
   var gap = parseFloat(getComputedStyle(panel).getPropertyValue('--sticky-gap')) || 0;
 
   function split(value) { return value ? value.split('|') : []; }
@@ -506,11 +497,9 @@ PAGE_JS = """
     return Array.prototype.some.call(select.options, function (o) { return o.value === value; });
   }
 
-  // Heights the CSS needs: where the panel sticks, and how far down a card
-  // has to land to clear it.
+  // How far down a card has to land to clear the stuck panel.
   function measure() {
-    root.style.setProperty('--topbar-h', topbar.offsetHeight + 'px');
-    root.style.setProperty('--sticky-h', (topbar.offsetHeight + panel.offsetHeight) + 'px');
+    root.style.setProperty('--sticky-h', (gap + panel.offsetHeight) + 'px');
   }
 
   // The row under the tags only takes space when something in it is showing.
@@ -543,25 +532,12 @@ PAGE_JS = """
       writeHash();
       // Scrolled down into the themes, the results start again just under the panel.
       measure();
-      var offset = topbar.offsetHeight + gap + panel.offsetHeight + 16;
+      var offset = gap + panel.offsetHeight + 16;
       var top = grid.getBoundingClientRect().top;
       if (top < offset) window.scrollTo(0, window.scrollY + top - offset);
     }
   }
 
-  function showTags() {
-    var query = search.value.trim().toLowerCase();
-    var visible = 0;
-    tagButtons.forEach(function (button) {
-      var match = query === '' || button.dataset.tag.indexOf(query) !== -1;
-      button.hidden = !match;
-      if (match) visible++;
-    });
-    noTags.hidden = visible > 0 || tagButtons.length === 0;
-    tagList.scrollLeft = 0;
-    updateFoot();
-    measure();
-  }
 
   function writeHash() {
     var parts = [];
@@ -597,7 +573,6 @@ PAGE_JS = """
   function toggle(tag) {
     if (isSelected(tag)) selected.splice(selected.indexOf(tag), 1);
     else selected.push(tag);
-    showTags();
     apply(true);
   }
 
@@ -605,28 +580,15 @@ PAGE_JS = """
     var button = event.target.closest('button');
     if (button) toggle(button.dataset.tag);
   });
-  search.addEventListener('input', showTags);
-  // Enter picks the tag when the search narrows the list to just one.
-  search.addEventListener('keydown', function (event) {
-    if (event.key !== 'Enter') return;
-    var matches = tagButtons.filter(function (b) { return !b.hidden; });
-    if (matches.length === 1) {
-      event.preventDefault();
-      search.value = '';
-      toggle(matches[0].dataset.tag);
-    }
-  });
   author.addEventListener('change', function () { apply(true); });
   ai.addEventListener('change', function () { apply(true); });
   clear.addEventListener('click', function () {
     selected = [];
     author.value = '';
     ai.value = '';
-    search.value = '';
-    showTags();
     apply(true);
   });
-  window.addEventListener('resize', showTags);
+  window.addEventListener('resize', measure);
 
   // A mouse wheel over a tag row scrolls it sideways while there's more of it
   // to see that way, and scrolls the page as usual once it reaches the end.
@@ -645,10 +607,10 @@ PAGE_JS = """
   // panel sticks. Checked on every scroll: it's one position read, and the
   // panel is only remeasured when the state actually changes.
   function checkStuck() {
-    var stuck = sentinel.getBoundingClientRect().top < topbar.offsetHeight + gap;
+    var stuck = sentinel.getBoundingClientRect().top < gap;
     if (stuck !== panel.classList.contains('stuck')) {
       panel.classList.toggle('stuck', stuck);
-      showTags();
+      measure();
     }
   }
   window.addEventListener('scroll', checkStuck, { passive: true });
@@ -656,7 +618,7 @@ PAGE_JS = """
 
   readHash();
   apply(false);
-  showTags();
+  measure();
   checkStuck();
 })();
 """
@@ -699,19 +661,13 @@ def render_filters(themes: list) -> str:
     ai_options = '<option value="">Any AI usage</option><option value="0">None (0 of 5)</option>' + "".join(
         f'<option value="{level}">Up to {level} of {AI_USAGE_MAX}</option>' for level in range(1, AI_USAGE_MAX))
 
-    search = ("""<label class="field search"><span class="label">Tags</span>
-        <input type="search" id="tag-search" placeholder="Find a tag" autocomplete="off" spellcheck="false"
-          aria-controls="tag-list">
-      </label>""" if tags else '<input type="search" id="tag-search" hidden>')
     return f"""<div class="filters-sentinel" id="filters-sentinel" aria-hidden="true"></div>
   <section class="filters" id="filters" aria-label="Filter themes" hidden>
     <div class="filter-row">
-      {search}
       <label class="field"><span class="label">Author</span> <select id="author-filter">{author_options}</select></label>
       <label class="field"><span class="label">AI usage</span> <select id="ai-filter">{ai_options}</select></label>
     </div>
     <div class="tag-list" id="tag-list" role="group" aria-label="Tags"{"" if tags else " hidden"}>{tag_buttons}</div>
-    <p class="no-tags" id="no-tag-matches" hidden>No tags match.</p>
     <div class="filter-foot">
       <p class="status" id="filter-status" aria-live="polite"></p>
       <button type="button" class="clear" id="clear-filters" hidden>Clear filters</button>
