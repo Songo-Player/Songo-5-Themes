@@ -4,8 +4,8 @@
 	"version": "0.6",
 	"author": "Morris",
 	"co_authors": ["Robot (AI)"],
-	"ai_usage": 1,
-	"description": "A dark minimal UI with accents of color to liven it up a bit",
+	"ai_usage": 4,
+	"description": "Variation of xBop with swappable accent colors, this change was almost entirely AI driven",
 	"components": {
 		"background_root": "background_root/background_root.tscn",
 		"header": "header/header.tscn",	

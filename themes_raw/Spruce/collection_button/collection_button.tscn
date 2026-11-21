@@ -1,0 +1,271 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/collection_button/collection_button.gd" id="1_script"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_regular.tres" id="2_font"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/record.svg" id="3_record"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/user.svg" id="4_user"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/playlist.svg" id="5_playlist"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_frame"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.235294, 0.219608, 0.211765, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="CollectionButton" type="MarginContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 52.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="SongButtonContainer" type="MarginContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_right = 14
+
+[node name="Row" type="HBoxContainer" parent="SongButtonContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="SongName" type="Label" parent="SongButtonContainer/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 19
+text = "Song Name"
+text_overrun_behavior = 3
+
+[node name="Duration" type="Label" parent="SongButtonContainer/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceDim"
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+text = "0:00"
+horizontal_alignment = 2
+
+[node name="AlbumButtonContainer" type="MarginContainer" parent="."]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
+
+[node name="Row" type="HBoxContainer" parent="AlbumButtonContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Frame" type="PanelContainer" parent="AlbumButtonContainer/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="FallbackMargin" type="MarginContainer" parent="AlbumButtonContainer/Row/Frame"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 9
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 9
+theme_override_constants/margin_bottom = 9
+
+[node name="AlbumFallbackCover" type="TextureRect" parent="AlbumButtonContainer/Row/Frame/FallbackMargin"]
+unique_name_in_owner = true
+modulate = Color(0.486275, 0.435294, 0.392157, 1)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_record")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AlbumCover" type="TextureRect" parent="AlbumButtonContainer/Row/Frame"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Info" type="VBoxContainer" parent="AlbumButtonContainer/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="AlbumName" type="Label" parent="AlbumButtonContainer/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 19
+text = "Name"
+text_overrun_behavior = 3
+
+[node name="ArtistName" type="Label" parent="AlbumButtonContainer/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceDim"
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "Artist"
+text_overrun_behavior = 3
+
+[node name="ArtistButtonContainer" type="MarginContainer" parent="."]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
+
+[node name="Row" type="HBoxContainer" parent="ArtistButtonContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Frame" type="PanelContainer" parent="ArtistButtonContainer/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="FallbackMargin" type="MarginContainer" parent="ArtistButtonContainer/Row/Frame"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 9
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 9
+theme_override_constants/margin_bottom = 9
+
+[node name="ArtistFallbackCover" type="TextureRect" parent="ArtistButtonContainer/Row/Frame/FallbackMargin"]
+unique_name_in_owner = true
+modulate = Color(0.486275, 0.435294, 0.392157, 1)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("4_user")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ArtistImage" type="TextureRect" parent="ArtistButtonContainer/Row/Frame"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Info" type="VBoxContainer" parent="ArtistButtonContainer/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="RecordArtistName" type="Label" parent="ArtistButtonContainer/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 19
+text = "Name"
+text_overrun_behavior = 3
+
+[node name="ArtistSummary" type="Label" parent="ArtistButtonContainer/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceDim"
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "0 songs"
+text_overrun_behavior = 3
+
+[node name="PlaylistButtonContainer" type="MarginContainer" parent="."]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
+
+[node name="Row" type="HBoxContainer" parent="PlaylistButtonContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Frame" type="PanelContainer" parent="PlaylistButtonContainer/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="FallbackMargin" type="MarginContainer" parent="PlaylistButtonContainer/Row/Frame"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 9
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 9
+theme_override_constants/margin_bottom = 9
+
+[node name="PlaylistFallbackCover" type="TextureRect" parent="PlaylistButtonContainer/Row/Frame/FallbackMargin"]
+unique_name_in_owner = true
+modulate = Color(0.486275, 0.435294, 0.392157, 1)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("5_playlist")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlaylistImage" type="TextureRect" parent="PlaylistButtonContainer/Row/Frame"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Info" type="VBoxContainer" parent="PlaylistButtonContainer/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="PlaylistName" type="Label" parent="PlaylistButtonContainer/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 19
+text = "Name"
+text_overrun_behavior = 3
+
+[node name="PlaylistSummary" type="Label" parent="PlaylistButtonContainer/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceDim"
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "0 songs"
+text_overrun_behavior = 3

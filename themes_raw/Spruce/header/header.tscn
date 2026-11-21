@@ -1,0 +1,97 @@
+[gd_scene load_steps=7 format=3 uid="uid://b35fdsg5n6fhs"]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/header/header.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://wr2e312rq4c8" path="res://theme_dev/themes_raw/Spruce/assets/spruce_tree.png" id="2_tree"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_bold.tres" id="3_bold"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/assets/wifi_icon.gd" id="4_wifi"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/assets/battery_icon.gd" id="5_battery"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_regular.tres" id="6_font"]
+
+[node name="Header" type="MarginContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 2
+script = ExtResource("1_script")
+
+[node name="TitleMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 150
+theme_override_constants/margin_right = 150
+
+[node name="Title" type="Label" parent="TitleMargin"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Logo" type="TextureRect" parent="Row"]
+self_modulate = Color(0.486275, 0.435294, 0.392157, 1)
+custom_minimum_size = Vector2(24, 38)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_tree")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Clock" type="Label" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("6_font")
+theme_override_font_sizes/font_size = 22
+text = "12:00"
+vertical_alignment = 2
+
+[node name="Spacer" type="Control" parent="Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Wifi" type="Control" parent="Row"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(28, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("4_wifi")
+
+[node name="Battery" type="Control" parent="Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(14, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("5_battery")
+
+[node name="BatteryLabel" type="Label" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("6_font")
+theme_override_font_sizes/font_size = 22
+text = "100"
+vertical_alignment = 2
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

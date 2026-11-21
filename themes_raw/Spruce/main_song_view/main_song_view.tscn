@@ -1,0 +1,481 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/main_song_view/main_song_view.gd" id="1_script"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_bold.tres" id="2_bold"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_regular.tres" id="3_font"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/music.svg" id="4_music"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/shuffle.svg" id="5_shuffle"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/repeat.svg" id="6_repeat"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/lock.svg" id="7_lock"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/sun.svg" id="8_sun"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/assets/spectrum_bars.gd" id="9_bars"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/assets/progress_bar.gd" id="10_progress"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/prev.svg" id="11_prev"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/play.svg" id="12_play"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/pause.svg" id="13_pause"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/next.svg" id="14_next"]
+[ext_resource type="Script" path="res://utilities/carousel_label.gd" id="15_carousel"]
+
+[sub_resource type="StyleBoxFlat" id="Art_frame"]
+bg_color = Color(0.235294, 0.219608, 0.211765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="File_tag"]
+content_margin_left = 6.0
+content_margin_top = 1.0
+content_margin_right = 6.0
+content_margin_bottom = 1.0
+bg_color = Color(0.156863, 0.156863, 0.156863, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="Info_panel"]
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+bg_color = Color(0.235294, 0.219608, 0.211765, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="Skip_normal"]
+content_margin_left = 12.0
+content_margin_top = 5.0
+content_margin_right = 12.0
+content_margin_bottom = 5.0
+bg_color = Color(0.313726, 0.286275, 0.270588, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="Skip_hover"]
+content_margin_left = 12.0
+content_margin_top = 5.0
+content_margin_right = 12.0
+content_margin_bottom = 5.0
+bg_color = Color(0.4, 0.360784, 0.329412, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="Skip_pressed"]
+content_margin_left = 12.0
+content_margin_top = 5.0
+content_margin_right = 12.0
+content_margin_bottom = 5.0
+bg_color = Color(0.843137, 0.705882, 0.372549, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="Round_normal"]
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+bg_color = Color(0.313726, 0.286275, 0.270588, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="Round_focus"]
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+bg_color = Color(0.843137, 0.705882, 0.372549, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[node name="MainSongView" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 0
+script = ExtResource("1_script")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Top" type="BoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/separation = 22
+
+[node name="ArtRow" type="HBoxContainer" parent="Layout/Top"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Visualizer" type="Control" parent="Layout/Top/ArtRow"]
+custom_minimum_size = Vector2(34, 196)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("9_bars")
+vertical = true
+
+[node name="ArtFrame" type="PanelContainer" parent="Layout/Top/ArtRow"]
+clip_children = 2
+custom_minimum_size = Vector2(196, 196)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Art_frame")
+
+[node name="DefaultMargin" type="MarginContainer" parent="Layout/Top/ArtRow/ArtFrame"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 52
+theme_override_constants/margin_top = 52
+theme_override_constants/margin_right = 52
+theme_override_constants/margin_bottom = 52
+
+[node name="DefaultSongImage" type="TextureRect" parent="Layout/Top/ArtRow/ArtFrame/DefaultMargin"]
+unique_name_in_owner = true
+modulate = Color(0.486275, 0.435294, 0.392157, 1)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("4_music")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MusicImage" type="TextureRect" parent="Layout/Top/ArtRow/ArtFrame"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VisualizerRight" type="Control" parent="Layout/Top/ArtRow"]
+visible = false
+custom_minimum_size = Vector2(34, 196)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("9_bars")
+vertical = true
+mirror = true
+
+[node name="InfoPanel" type="PanelContainer" parent="Layout/Top"]
+custom_minimum_size = Vector2(0, 196)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Info_panel")
+
+[node name="Info" type="VBoxContainer" parent="Layout/Top/InfoPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="TagRow" type="HBoxContainer" parent="Layout/Top/InfoPanel/Info"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="FileTag" type="PanelContainer" parent="Layout/Top/InfoPanel/Info/TagRow"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("File_tag")
+
+[node name="FileTypeLabel" type="Label" parent="Layout/Top/InfoPanel/Info/TagRow/FileTag"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("2_bold")
+theme_override_font_sizes/font_size = 11
+text = "FLAC"
+
+[node name="SongLabel" type="Label" parent="Layout/Top/InfoPanel/Info"]
+unique_name_in_owner = true
+clip_text = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_bold")
+theme_override_font_sizes/font_size = 26
+text = "Song Title"
+script = ExtResource("15_carousel")
+font_color = Color(0.984314, 0.945098, 0.780392, 1)
+
+[node name="ArtistLabel" type="Label" parent="Layout/Top/InfoPanel/Info"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 19
+text = "Artist"
+text_overrun_behavior = 3
+
+[node name="AlbumLabel" type="Label" parent="Layout/Top/InfoPanel/Info"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.6, 0.517647, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 16
+text = "Album"
+text_overrun_behavior = 3
+
+[node name="TrackCount" type="HBoxContainer" parent="Layout/Top/InfoPanel/Info/TagRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="TrackCurrent" type="Label" parent="Layout/Top/InfoPanel/Info/TagRow/TrackCount"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("2_bold")
+theme_override_font_sizes/font_size = 14
+text = "1"
+
+[node name="Slash" type="Label" parent="Layout/Top/InfoPanel/Info/TagRow/TrackCount"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.6, 0.517647, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 14
+text = "/"
+
+[node name="TrackTotal" type="Label" parent="Layout/Top/InfoPanel/Info/TagRow/TrackCount"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.839216, 0.364706, 0.054902, 1)
+theme_override_fonts/font = ExtResource("2_bold")
+theme_override_font_sizes/font_size = 14
+text = "1"
+
+[node name="ShuffleIcon" type="TextureRect" parent="Layout/Top/InfoPanel/Info/TagRow"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.407843, 0.615686, 0.415686, 1)
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("5_shuffle")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RepeatingIcon" type="TextureRect" parent="Layout/Top/InfoPanel/Info/TagRow"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.407843, 0.615686, 0.415686, 1)
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("6_repeat")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockIcon" type="TextureRect" parent="Layout/Top/InfoPanel/Info/TagRow"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.843137, 0.705882, 0.372549, 1)
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("7_lock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StayAwakeIcon" type="TextureRect" parent="Layout/Top/InfoPanel/Info/TagRow"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.843137, 0.705882, 0.372549, 1)
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("8_sun")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Spacer" type="Control" parent="Layout/Top/InfoPanel/Info"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ProgressRow" type="HBoxContainer" parent="Layout/Top/InfoPanel/Info"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="CurrentTimeLabel" type="Label" parent="Layout/Top/InfoPanel/Info/ProgressRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 15
+text = "0:00"
+
+[node name="Progress" type="Control" parent="Layout/Top/InfoPanel/Info/ProgressRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("10_progress")
+track_color = Color(0.4, 0.360784, 0.329412, 1)
+
+[node name="EndTimeLabel" type="Label" parent="Layout/Top/InfoPanel/Info/ProgressRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 15
+text = "0:00"
+horizontal_alignment = 2
+
+[node name="Controls" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 24
+
+[node name="PrevButton" type="Button" parent="Layout/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(0.921569, 0.858824, 0.698039, 1)
+theme_override_colors/font_hover_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/font_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_normal_color = Color(0.921569, 0.858824, 0.698039, 1)
+theme_override_colors/icon_hover_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/icon_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_constants/h_separation = 7
+theme_override_constants/icon_max_width = 16
+theme_override_fonts/font = ExtResource("2_bold")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Skip_normal")
+theme_override_styles/hover = SubResource("Skip_hover")
+theme_override_styles/pressed = SubResource("Skip_pressed")
+theme_override_styles/hover_pressed = SubResource("Skip_pressed")
+text = "L1"
+icon = ExtResource("11_prev")
+
+[node name="PlayButton" type="Button" parent="Layout/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_override_colors/icon_normal_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/icon_focus_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_hover_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_styles/focus = SubResource("Round_focus")
+theme_override_styles/hover = SubResource("Round_normal")
+theme_override_styles/pressed = SubResource("Round_focus")
+theme_override_styles/normal = SubResource("Round_normal")
+icon = ExtResource("12_play")
+icon_alignment = 1
+expand_icon = true
+
+[node name="PauseButton" type="Button" parent="Layout/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_override_colors/icon_normal_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/icon_focus_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_hover_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_styles/focus = SubResource("Round_focus")
+theme_override_styles/hover = SubResource("Round_normal")
+theme_override_styles/pressed = SubResource("Round_focus")
+theme_override_styles/normal = SubResource("Round_normal")
+icon = ExtResource("13_pause")
+icon_alignment = 1
+expand_icon = true
+
+[node name="NextButton" type="Button" parent="Layout/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(0.921569, 0.858824, 0.698039, 1)
+theme_override_colors/font_hover_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/font_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_normal_color = Color(0.921569, 0.858824, 0.698039, 1)
+theme_override_colors/icon_hover_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_colors/icon_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.156863, 0.156863, 0.156863, 1)
+theme_override_constants/h_separation = 7
+theme_override_constants/icon_max_width = 16
+theme_override_fonts/font = ExtResource("2_bold")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Skip_normal")
+theme_override_styles/hover = SubResource("Skip_hover")
+theme_override_styles/pressed = SubResource("Skip_pressed")
+theme_override_styles/hover_pressed = SubResource("Skip_pressed")
+text = "R1"
+icon = ExtResource("14_next")
+icon_alignment = 2
+
+[node name="BottomGap" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LyricLayer" type="Control" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LyricLabel" type="Label" parent="LyricLayer"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+mouse_filter = 2
+theme_type_variation = &"SpruceSoft"
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
+[connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
+[connection signal="pressed" from="Layout/Controls/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="Layout/Controls/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="Layout/Controls/PrevButton" to="." method="_on_prev_button_pressed"]
+[connection signal="pressed" from="Layout/Controls/NextButton" to="." method="_on_next_button_pressed"]

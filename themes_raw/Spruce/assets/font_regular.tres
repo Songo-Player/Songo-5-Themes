@@ -1,0 +1,13 @@
+[gd_resource type="FontVariation" load_steps=3 format=3]
+
+[ext_resource type="FontFile" path="res://theme_dev/themes_raw/Spruce/assets/Nunito.ttf" id="1_nunito"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansCJKjp-Medium-Latin.otf" id="2_noto"]
+
+; Nunito is a variable font. spruce's lists use a heavy-ish Nunito, so the
+; everyday weight here is SemiBold (wght 600) rather than Regular.
+[resource]
+fallbacks = Array[Font]([ExtResource("2_noto")])
+base_font = ExtResource("1_nunito")
+variation_opentype = {
+2003265652: 600
+}

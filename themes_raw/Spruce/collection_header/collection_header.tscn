@@ -1,0 +1,85 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Spruce/collection_header/collection_header.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Spruce/assets/icons/music.svg" id="2_music"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_regular.tres" id="3_font"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Spruce/assets/font_bold.tres" id="4_bold"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(0.235294, 0.219608, 0.211765, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="CollectionHeader" type="MarginContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 36.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 2
+script = ExtResource("1_script")
+
+[node name="Bar" type="PanelContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="Row" type="HBoxContainer" parent="Bar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="TypeIcon" type="TextureRect" parent="Bar/Row"]
+unique_name_in_owner = true
+self_modulate = Color(0.658824, 0.6, 0.517647, 1)
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_music")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="KindLabel" type="Label" parent="Bar/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SpruceDim"
+theme_override_colors/font_color = Color(0.658824, 0.6, 0.517647, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 15
+text = "All Songs"
+text_overrun_behavior = 3
+
+[node name="Current" type="Label" parent="Bar/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.984314, 0.945098, 0.780392, 1)
+theme_override_fonts/font = ExtResource("4_bold")
+theme_override_font_sizes/font_size = 17
+text = "1"
+
+[node name="Slash" type="Label" parent="Bar/Row"]
+layout_mode = 2
+theme_type_variation = &"SpruceDim"
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.658824, 0.6, 0.517647, 1)
+text = "/"
+
+[node name="Total" type="Label" parent="Bar/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.839216, 0.364706, 0.054902, 1)
+theme_override_fonts/font = ExtResource("4_bold")
+theme_override_font_sizes/font_size = 17
+text = "0"
