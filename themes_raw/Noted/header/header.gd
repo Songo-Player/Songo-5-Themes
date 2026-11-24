@@ -9,6 +9,8 @@ const Squiggle = preload("../assets/squiggle.gd")
 var _battery_thread: Thread
 
 func _ready() -> void:
+	_show_network_status(DeviceOS.network_connected)
+	DeviceOS.network_status_checked.connect(_show_network_status)
 	for label in [%DateLabel, %DateValue, %Clock, %BatteryLabel]:
 		label.material = Squiggle.material(0.15)
 	%NetIcon.material = Squiggle.material(1.5)
@@ -21,7 +23,6 @@ func _update_widgets() -> void:
 	var now := Time.get_datetime_dict_from_system()
 	%DateValue.text = "%s %d" % [["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"][now.month - 1], now.day]
 	%Clock.text = _time_text(now)
-	_check_network()
 	if DeviceOS.battery_info_path != "":
 		_update_battery_async()
 	else:
@@ -36,10 +37,9 @@ func _time_text(now: Dictionary) -> String:
 	if hour == 0: hour = 12
 	return "%d:%02d%s" % [hour, now.minute, suffix]
 
-func _check_network() -> void:
-	var checker := NetworkStatus.new()
-	checker.status_checked.connect(func(connected): %NetIcon.visible = connected)
-	checker.is_connected_to_network()
+# Songo checks for internet once after boot (see DeviceOS.network_status_checked)
+func _show_network_status(connected: bool) -> void:
+	%NetIcon.visible = connected
 
 func _update_battery_async() -> void:
 	# Still reading from the last refresh; it's joined in _show_battery.

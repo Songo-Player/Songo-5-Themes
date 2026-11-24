@@ -32,6 +32,8 @@ That's all: the workflow releases the theme and puts it on the page within a cou
 
 The theme's folder name is its ID: it names the release, the zip and the folder Songo installs it into. Renaming the folder makes it a new theme, with its download count starting again from 0.
 
+**List fade and bottom margin:** in a theme's `theme.tres`, `CollectionOptions` `list_bottom_fade` and `ListSectionOuterMargin` `margin_bottom` must match. The margin leaves room below the list as tall as the fade, so the list's end, and the bar under it, sit above the fade rather than inside it. If you change one, change the other to the same value.
+
 ## Releases and download counts
 
 Every theme has one GitHub release, `theme-<Theme>`, holding two files:

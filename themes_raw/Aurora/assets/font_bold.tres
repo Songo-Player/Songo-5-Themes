@@ -1,0 +1,13 @@
+[gd_resource type="FontVariation" load_steps=3 format=3]
+
+[ext_resource type="FontFile" path="res://theme_dev/themes_raw/Aurora/assets/Montserrat.ttf" id="1_montserrat"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansCJKjp-Medium-Latin.otf" id="2_noto"]
+
+; Montserrat (a variable font), Bold (wght 700), for titles and the main menu's cards.
+; Songo's Noto Sans CJK covers what Montserrat doesn't (CJK titles).
+[resource]
+fallbacks = Array[Font]([ExtResource("2_noto")])
+base_font = ExtResource("1_montserrat")
+variation_opentype = {
+2003265652: 700
+}

@@ -1,0 +1,82 @@
+[gd_scene load_steps=7 format=3 uid="uid://dt0gtxd1qloqk"]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/song_follow/song_follow.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c7chqmum3whu7" path="res://assets/music.svg" id="2_music"]
+[ext_resource type="Script" path="res://utilities/carousel_label.gd" id="3_carousel"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_regular.tres" id="4_font"]
+[ext_resource type="PackedScene" uid="uid://dfrhbh0b1eww5" path="res://theme_dev/themes_raw/Aurora/assets/hint.tscn" id="20_hint"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.058824, 0.082353, 0.156863, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="SongFollow" type="MarginContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 0
+script = ExtResource("1_script")
+
+[node name="Bar" type="PanelContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="Layout" type="VBoxContainer" parent="Bar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Row" type="HBoxContainer" parent="Bar/Layout"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Note" type="TextureRect" parent="Bar/Layout/Row"]
+modulate = Color(0.329412, 0.407843, 0.890196, 1)
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_music")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SongTitle" type="Label" parent="Bar/Layout/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+text = "Song  ·  Artist"
+clip_text = true
+script = ExtResource("3_carousel")
+
+[node name="Hints" type="HBoxContainer" parent="Bar/Layout/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="ReturnHint" parent="Bar/Layout/Row/Hints" instance=ExtResource("20_hint")]
+layout_mode = 2
+button = "SELECT"
+action = "Return"
+text_size = 13
+
+[node name="StopHint" parent="Bar/Layout/Row/Hints" instance=ExtResource("20_hint")]
+layout_mode = 2
+button = "START"
+action = "Stop"
+text_size = 13

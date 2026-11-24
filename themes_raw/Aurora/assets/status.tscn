@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/status.gd" id="1_script"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/wifi_icon.gd" id="2_wifi"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/battery_icon.gd" id="3_battery"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_semibold.tres" id="4_semibold"]
+
+[node name="Status" type="HBoxContainer"]
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+script = ExtResource("1_script")
+
+[node name="Wifi" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(20, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_wifi")
+
+[node name="Percent" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("4_semibold")
+theme_override_font_sizes/font_size = 14
+text = "100%"
+
+[node name="Battery" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(30, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("3_battery")

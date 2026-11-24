@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/main_menu/main_menu.gd" id="1_script"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Screen" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -16.0
+offset_top = -80.0
+offset_right = 624.0
+offset_bottom = 400.0
+mouse_filter = 2
+
+[node name="Row" type="HBoxContainer" parent="Screen"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 16.0
+offset_top = 96.0
+offset_right = 376.0
+offset_bottom = 352.0
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Dots" type="HBoxContainer" parent="Screen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 368.0
+offset_bottom = 376.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="System" type="HBoxContainer" parent="Screen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_top = 400.0
+offset_right = -16.0
+offset_bottom = 464.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 2

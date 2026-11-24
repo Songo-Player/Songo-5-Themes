@@ -1,0 +1,393 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/main_song_view/main_song_view.gd" id="1_script"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/card_face.gd" id="2_face"]
+[ext_resource type="Script" path="res://utilities/carousel_label.gd" id="3_carousel"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/spectrum_bars.gd" id="4_bars"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/progress_bar.gd" id="5_progress"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_bold.tres" id="6_bold"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_semibold.tres" id="7_semibold"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_regular.tres" id="8_regular"]
+[ext_resource type="Texture2D" path="res://assets/music.svg" id="9_note"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Aurora/assets/icons/lock.svg" id="10_lock"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Aurora/assets/icons/sun.svg" id="11_sun"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Aurora/assets/icons/prev.svg" id="12_prev"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Aurora/assets/icons/pause.svg" id="13_pause"]
+[ext_resource type="Texture2D" path="res://theme_dev/themes_raw/Aurora/assets/icons/next.svg" id="14_next"]
+
+[node name="MainSongView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Layout" type="BoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Card" type="Control" parent="Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Face" type="Control" parent="Layout/Card"]
+unique_name_in_owner = true
+texture_filter = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -46.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_face")
+
+[node name="NoteCenter" type="CenterContainer" parent="Layout/Card"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="NoteIcon" type="TextureRect" parent="Layout/Card/NoteCenter"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_note")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InfoPanel" type="PanelContainer" parent="Layout/Card"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"AuroraPanel"
+
+[node name="Margin" type="MarginContainer" parent="Layout/Card/InfoPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Row" type="HBoxContainer" parent="Layout/Card/InfoPanel/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="AccentBar" type="PanelContainer" parent="Layout/Card/InfoPanel/Margin/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Text" type="VBoxContainer" parent="Layout/Card/InfoPanel/Margin/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Title" type="Label" parent="Layout/Card/InfoPanel/Margin/Row/Text"]
+unique_name_in_owner = true
+clip_text = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("6_bold")
+theme_override_font_sizes/font_size = 20
+text = "Title"
+script = ExtResource("3_carousel")
+
+[node name="Artist" type="Label" parent="Layout/Card/InfoPanel/Margin/Row/Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_type_variation = &"AuroraDim"
+theme_override_fonts/font = ExtResource("8_regular")
+theme_override_font_sizes/font_size = 14
+text = "Artist"
+text_overrun_behavior = 3
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Info" type="PanelContainer" parent="Layout/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_type_variation = &"AuroraPanel"
+
+[node name="Margin" type="MarginContainer" parent="Layout/Column/Info"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Stack" type="VBoxContainer" parent="Layout/Column/Info/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Chips" type="HBoxContainer" parent="Layout/Column/Info/Margin/Stack"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="FileChip" type="PanelContainer" parent="Layout/Column/Info/Margin/Stack/Chips"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"AuroraChip"
+
+[node name="FileLabel" type="Label" parent="Layout/Column/Info/Margin/Stack/Chips/FileChip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_semibold")
+theme_override_font_sizes/font_size = 12
+text = "MP3"
+vertical_alignment = 1
+
+[node name="QueueChip" type="PanelContainer" parent="Layout/Column/Info/Margin/Stack/Chips"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"AuroraChip"
+
+[node name="Row" type="HBoxContainer" parent="Layout/Column/Info/Margin/Stack/Chips/QueueChip"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="QueueIcon" type="TextureRect" parent="Layout/Column/Info/Margin/Stack/Chips/QueueChip/Row"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="QueueLabel" type="Label" parent="Layout/Column/Info/Margin/Stack/Chips/QueueChip/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_semibold")
+theme_override_font_sizes/font_size = 12
+text = "1 / 1"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="Layout/Column/Info/Margin/Stack/Chips"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LockIcon" type="TextureRect" parent="Layout/Column/Info/Margin/Stack/Chips"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("10_lock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SunIcon" type="TextureRect" parent="Layout/Column/Info/Margin/Stack/Chips"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("11_sun")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ChipsGap" type="Control" parent="Layout/Column/Info/Margin/Stack"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="AlbumCaption" type="Label" parent="Layout/Column/Info/Margin/Stack"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_type_variation = &"AuroraDim"
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("8_regular")
+theme_override_font_sizes/font_size = 12
+text = "From the album"
+
+[node name="Album" type="Label" parent="Layout/Column/Info/Margin/Stack"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_semibold")
+theme_override_font_sizes/font_size = 16
+text = "Album"
+text_overrun_behavior = 3
+
+[node name="Visualizer" type="Control" parent="Layout/Column/Info/Margin/Stack"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Trail" type="Control" parent="Layout/Column/Info/Margin/Stack/Visualizer"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_bars")
+decay = 0.03
+balls = true
+
+[node name="Bars" type="Control" parent="Layout/Column/Info/Margin/Stack/Visualizer"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_bars")
+
+[node name="Lyric" type="Label" parent="Layout/Column/Info/Margin/Stack/Visualizer"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_semibold")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="ProgressPanel" type="PanelContainer" parent="Layout/Column"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"AuroraPanel"
+
+[node name="Margin" type="MarginContainer" parent="Layout/Column/ProgressPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+
+[node name="Row" type="HBoxContainer" parent="Layout/Column/ProgressPanel/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="TimeNow" type="Label" parent="Layout/Column/ProgressPanel/Margin/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_type_variation = &"AuroraDim"
+theme_override_fonts/font = ExtResource("7_semibold")
+theme_override_font_sizes/font_size = 14
+text = "0:00"
+vertical_alignment = 1
+
+[node name="Progress" type="Control" parent="Layout/Column/ProgressPanel/Margin/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("5_progress")
+track_color = Color(0.101961, 0.133333, 0.219608, 1)
+
+[node name="TimeEnd" type="Label" parent="Layout/Column/ProgressPanel/Margin/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_type_variation = &"AuroraDim"
+theme_override_fonts/font = ExtResource("7_semibold")
+theme_override_font_sizes/font_size = 14
+text = "0:00"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Controls" type="HBoxContainer" parent="Layout/Column"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="PrevButton" type="Button" parent="Layout/Column/Controls"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"AuroraSystemButton"
+icon = ExtResource("12_prev")
+icon_alignment = 1
+expand_icon = true
+
+[node name="PlayButton" type="Button" parent="Layout/Column/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"AuroraPlayButton"
+icon = ExtResource("13_pause")
+icon_alignment = 1
+expand_icon = true
+
+[node name="NextButton" type="Button" parent="Layout/Column/Controls"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"AuroraSystemButton"
+icon = ExtResource("14_next")
+icon_alignment = 1
+expand_icon = true
+
+[connection signal="pressed" from="Layout/Column/Controls/PrevButton" to="." method="_on_prev_button_pressed"]
+[connection signal="pressed" from="Layout/Column/Controls/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="Layout/Column/Controls/NextButton" to="." method="_on_next_button_pressed"]

@@ -7,6 +7,8 @@ const P = preload("../assets/palette.gd")
 var _battery_thread: Thread
 
 func _ready() -> void:
+	_show_network_status(DeviceOS.network_connected)
+	DeviceOS.network_status_checked.connect(_show_network_status)
 	_apply_settings()
 	ThemeManager.theme_settings_updated.connect(_apply_settings)
 	_update_widgets()
@@ -21,19 +23,15 @@ func _on_timer_timeout() -> void:
 func _update_widgets() -> void:
 	var now := Time.get_datetime_dict_from_system()
 	%Clock.text = P.clock_text(now.hour, now.minute)
-	_check_network()
 	if DeviceOS.battery_info_path != "":
 		_update_battery_async()
 	else:
 		%BatteryLabel.text = "BATT --"
 
-func _check_network() -> void:
-	var checker := NetworkStatus.new()
-	checker.status_checked.connect(func(connected):
-		if not is_instance_valid(self): return
-		%NetLabel.visible = connected
-		%Sep.visible = connected)
-	checker.is_connected_to_network()
+# Songo checks for internet once after boot (see DeviceOS.network_status_checked)
+func _show_network_status(connected: bool) -> void:
+	%NetLabel.visible = connected
+	%Sep.visible = connected
 
 func _update_battery_async() -> void:
 	# Still reading from the last refresh; it's joined in _show_battery.

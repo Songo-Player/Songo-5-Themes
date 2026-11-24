@@ -3,7 +3,7 @@
 	"rootDir": "Departures",
 	"version": "1.0",
 	"author": "Robot (AI)",
-	"co_authors": ["Riley"],
+	"co_authors": ["SongoDev"],
 	"ai_usage": 4,
 	"description": "A split-flap station board. Your library leaves on time; songs play as boarding passes.",
 	"components": {

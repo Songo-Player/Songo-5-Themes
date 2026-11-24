@@ -1,0 +1,142 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/main_menu/menu_card.gd" id="1_script"]
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/assets/card_face.gd" id="2_face"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_bold.tres" id="3_bold"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_regular.tres" id="4_regular"]
+
+[node name="MenuCard" type="Button"]
+custom_minimum_size = Vector2(180, 256)
+theme_type_variation = &"AuroraCard"
+script = ExtResource("1_script")
+
+[node name="Plain" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"AuroraPanel"
+
+[node name="Face" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+texture_filter = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -46.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_face")
+
+[node name="Icon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -42.0
+offset_top = 66.0
+offset_right = 42.0
+offset_bottom = 150.0
+grow_horizontal = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IconAccent" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -42.0
+offset_top = 66.0
+offset_right = 42.0
+offset_bottom = 150.0
+grow_horizontal = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InfoPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"AuroraPanel"
+
+[node name="Margin" type="MarginContainer" parent="InfoPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Row" type="HBoxContainer" parent="InfoPanel/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="AccentBar" type="PanelContainer" parent="InfoPanel/Margin/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Text" type="VBoxContainer" parent="InfoPanel/Margin/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Title" type="Label" parent="InfoPanel/Margin/Row/Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_font_sizes/font_size = 20
+text = "Title"
+text_overrun_behavior = 3
+
+[node name="Subtitle" type="Label" parent="InfoPanel/Margin/Row/Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_type_variation = &"AuroraDim"
+theme_override_fonts/font = ExtResource("4_regular")
+theme_override_font_sizes/font_size = 14
+text = "Subtitle"
+text_overrun_behavior = 3
+
+[node name="NameLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 178.0
+offset_right = -10.0
+offset_bottom = 206.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_font_sizes/font_size = 20
+text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3

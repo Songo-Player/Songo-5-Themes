@@ -1,0 +1,127 @@
+[gd_scene load_steps=6 format=3 uid="uid://bs5rh46yxcjwl"]
+
+[ext_resource type="Script" path="res://theme_dev/themes_raw/Aurora/header/header.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cwx0kesnun1f8" path="res://theme_dev/themes_raw/Aurora/assets/icons/star.svg" id="2_star"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_bold.tres" id="3_bold"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_semibold.tres" id="4_semibold"]
+[ext_resource type="PackedScene" path="res://theme_dev/themes_raw/Aurora/assets/status.tscn" id="5_status"]
+
+[node name="Header" type="Control"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 72.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="MenuBar" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Logo" type="TextureRect" parent="MenuBar"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 52.0
+offset_bottom = 52.0
+mouse_filter = 2
+texture = ExtResource("2_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ClockPill" type="PanelContainer" parent="MenuBar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -74.0
+offset_top = 12.0
+offset_right = 74.0
+offset_bottom = 60.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"AuroraPill"
+
+[node name="MenuClock" type="Label" parent="MenuBar/ClockPill"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_semibold")
+theme_override_font_sizes/font_size = 18
+text = "12:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusPill" type="PanelContainer" parent="MenuBar"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -114.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 60.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"AuroraPill"
+
+[node name="MenuStatus" parent="MenuBar/StatusPill" instance=ExtResource("5_status")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PageBar" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 60.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"AuroraPill"
+
+[node name="Row" type="HBoxContainer" parent="PageBar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="PageBar/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_font_sizes/font_size = 18
+text = "Page"
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="PageClock" type="Label" parent="PageBar/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"AuroraDim"
+theme_override_fonts/font = ExtResource("4_semibold")
+theme_override_font_sizes/font_size = 18
+text = "12:00"
+vertical_alignment = 1
+
+[node name="PageStatus" parent="PageBar/Row" instance=ExtResource("5_status")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

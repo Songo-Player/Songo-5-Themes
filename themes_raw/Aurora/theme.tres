@@ -1,0 +1,461 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_regular.tres" id="1_font"]
+[ext_resource type="FontVariation" path="res://theme_dev/themes_raw/Aurora/assets/font_semibold.tres" id="2_semibold"]
+
+; Aurora's look for Songo's own controls: navy pills and panels, white
+; Montserrat text, and the indigo accent on whatever has focus. List rows
+; are full pills, 46 pixels tall and 2 apart, as in Aurora's lists.
+;
+; CollectionOptions' list_bottom_fade and ListSectionOuterMargin's
+; margin_bottom go together: the margin leaves room below the list as tall
+; as the fade, so the list's end (and the bar under it) sits above the fade
+; rather than inside it. Change one, change the other to match.
+
+[sub_resource type="StyleBoxFlat" id="Button_normal"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Button_focus"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="ListButton_normal"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 0)
+corner_radius_top_left = 23
+corner_radius_top_right = 23
+corner_radius_bottom_right = 23
+corner_radius_bottom_left = 23
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="ListButton_focus"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 23
+corner_radius_top_right = 23
+corner_radius_bottom_right = 23
+corner_radius_bottom_left = 23
+corner_detail = 12
+
+[sub_resource type="StyleBoxEmpty" id="ListPanel_panel"]
+
+[sub_resource type="StyleBoxFlat" id="SongoPanel_panel"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="GrayInput_panel"]
+content_margin_left = 10.0
+content_margin_top = 2.0
+content_margin_right = 10.0
+content_margin_bottom = 2.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Settings_normal"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Settings_focus"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Settings_disabled"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 0.5)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxEmpty" id="SettingsLabel_normal"]
+
+[sub_resource type="StyleBoxFlat" id="Scroll_rail"]
+content_margin_left = 4.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Scroll_grabber"]
+content_margin_left = 4.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Scroll_grabber_highlight"]
+content_margin_left = 4.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Aurora_pill"]
+content_margin_left = 18.0
+content_margin_top = 0.0
+content_margin_right = 18.0
+content_margin_bottom = 0.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_panel"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_chip"]
+content_margin_left = 10.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_dot"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_dot_active"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_system"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_system_focus"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_power"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.152941, 0.0627451, 0.0627451, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_power_focus"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.976471, 0.254902, 0.266667, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_play"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.101961, 0.133333, 0.219608, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_play_focus"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.329412, 0.407843, 0.890196, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+corner_detail = 12
+
+[sub_resource type="StyleBoxEmpty" id="Aurora_empty"]
+
+[sub_resource type="StyleBoxFlat" id="Aurora_badge"]
+bg_color = Color(0.678431, 0.686275, 0.713726, 1)
+corner_radius_top_left = 11
+corner_radius_top_right = 11
+corner_radius_bottom_right = 11
+corner_radius_bottom_left = 11
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_badge_wide"]
+content_margin_left = 7.0
+content_margin_right = 7.0
+bg_color = Color(0.678431, 0.686275, 0.713726, 1)
+corner_radius_top_left = 11
+corner_radius_top_right = 11
+corner_radius_bottom_right = 11
+corner_radius_bottom_left = 11
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="Aurora_hint_pill"]
+content_margin_left = 12.0
+content_margin_right = 16.0
+bg_color = Color(0.0588235, 0.0823529, 0.156863, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+corner_detail = 12
+
+[resource]
+default_font = ExtResource("1_font")
+CollectionOptions/constants/list_bottom_fade = 20
+CollectionOptions/constants/list_top_fade = 0
+CollectionOptions/constants/vertical_layout = 1
+AuroraBadge/base_type = &"PanelContainer"
+AuroraBadge/styles/panel = SubResource("Aurora_badge")
+AuroraBadgeWide/base_type = &"PanelContainer"
+AuroraBadgeWide/styles/panel = SubResource("Aurora_badge_wide")
+AuroraCard/base_type = &"Button"
+AuroraCard/styles/disabled = SubResource("Aurora_empty")
+AuroraCard/styles/focus = SubResource("Aurora_empty")
+AuroraCard/styles/hover = SubResource("Aurora_empty")
+AuroraCard/styles/hover_pressed = SubResource("Aurora_empty")
+AuroraCard/styles/normal = SubResource("Aurora_empty")
+AuroraCard/styles/pressed = SubResource("Aurora_empty")
+AuroraChip/base_type = &"PanelContainer"
+AuroraChip/styles/panel = SubResource("Aurora_chip")
+AuroraDot/base_type = &"PanelContainer"
+AuroraDot/styles/panel = SubResource("Aurora_dot")
+AuroraDotActive/base_type = &"PanelContainer"
+AuroraDotActive/styles/panel = SubResource("Aurora_dot_active")
+AuroraHintPill/base_type = &"PanelContainer"
+AuroraHintPill/styles/panel = SubResource("Aurora_hint_pill")
+AuroraPanel/base_type = &"PanelContainer"
+AuroraPanel/styles/panel = SubResource("Aurora_panel")
+AuroraPill/base_type = &"PanelContainer"
+AuroraPill/styles/panel = SubResource("Aurora_pill")
+AuroraPlayButton/base_type = &"Button"
+AuroraPlayButton/colors/icon_focus_color = Color(1, 1, 1, 1)
+AuroraPlayButton/colors/icon_hover_color = Color(1, 1, 1, 1)
+AuroraPlayButton/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+AuroraPlayButton/colors/icon_normal_color = Color(1, 1, 1, 1)
+AuroraPlayButton/colors/icon_pressed_color = Color(1, 1, 1, 1)
+AuroraPlayButton/styles/disabled = SubResource("Aurora_play")
+AuroraPlayButton/styles/focus = SubResource("Aurora_play_focus")
+AuroraPlayButton/styles/hover = SubResource("Aurora_play")
+AuroraPlayButton/styles/hover_pressed = SubResource("Aurora_play_focus")
+AuroraPlayButton/styles/normal = SubResource("Aurora_play")
+AuroraPlayButton/styles/pressed = SubResource("Aurora_play_focus")
+AuroraPowerButton/base_type = &"Button"
+AuroraPowerButton/colors/icon_focus_color = Color(1, 1, 1, 1)
+AuroraPowerButton/colors/icon_hover_color = Color(1, 0.470588, 0.470588, 1)
+AuroraPowerButton/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+AuroraPowerButton/colors/icon_normal_color = Color(1, 0.470588, 0.470588, 1)
+AuroraPowerButton/colors/icon_pressed_color = Color(1, 1, 1, 1)
+AuroraPowerButton/styles/disabled = SubResource("Aurora_power")
+AuroraPowerButton/styles/focus = SubResource("Aurora_power_focus")
+AuroraPowerButton/styles/hover = SubResource("Aurora_power")
+AuroraPowerButton/styles/hover_pressed = SubResource("Aurora_power_focus")
+AuroraPowerButton/styles/normal = SubResource("Aurora_power")
+AuroraPowerButton/styles/pressed = SubResource("Aurora_power_focus")
+AuroraSystemButton/base_type = &"Button"
+AuroraSystemButton/colors/icon_focus_color = Color(1, 1, 1, 1)
+AuroraSystemButton/colors/icon_hover_color = Color(1, 1, 1, 1)
+AuroraSystemButton/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+AuroraSystemButton/colors/icon_normal_color = Color(1, 1, 1, 1)
+AuroraSystemButton/colors/icon_pressed_color = Color(1, 1, 1, 1)
+AuroraSystemButton/styles/disabled = SubResource("Aurora_system")
+AuroraSystemButton/styles/focus = SubResource("Aurora_system_focus")
+AuroraSystemButton/styles/hover = SubResource("Aurora_system")
+AuroraSystemButton/styles/hover_pressed = SubResource("Aurora_system_focus")
+AuroraSystemButton/styles/normal = SubResource("Aurora_system")
+AuroraSystemButton/styles/pressed = SubResource("Aurora_system_focus")
+AuroraDim/base_type = &"Label"
+AuroraDim/colors/font_color = Color(0.678431, 0.686275, 0.713726, 1)
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_focus_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_focus_color = Color(1, 1, 1, 1)
+Button/colors/icon_normal_color = Color(1, 1, 1, 1)
+Button/colors/icon_pressed_color = Color(1, 1, 1, 1)
+Button/fonts/font = ExtResource("2_semibold")
+Button/styles/focus = SubResource("Button_focus")
+Button/styles/hover = SubResource("Button_normal")
+Button/styles/normal = SubResource("Button_normal")
+Button/styles/pressed = SubResource("Button_focus")
+ItemList/fonts/font = ExtResource("1_font")
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/fonts/font = ExtResource("1_font")
+ListButton/base_type = &"Button"
+ListButton/colors/font_color = Color(1, 1, 1, 1)
+ListButton/colors/font_focus_color = Color(1, 1, 1, 1)
+ListButton/colors/font_hover_color = Color(1, 1, 1, 1)
+ListButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+ListButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+ListButton/colors/icon_focus_color = Color(1, 1, 1, 1)
+ListButton/colors/icon_hover_color = Color(1, 1, 1, 1)
+ListButton/colors/icon_normal_color = Color(1, 1, 1, 1)
+ListButton/constants/h_separation = 12
+ListButton/constants/icon_max_width = 22
+ListButton/font_sizes/font_size = 18
+ListButton/fonts/font = ExtResource("2_semibold")
+ListButton/styles/focus = SubResource("ListButton_focus")
+ListButton/styles/hover = SubResource("ListButton_normal")
+ListButton/styles/normal = SubResource("ListButton_normal")
+ListButton/styles/pressed = SubResource("ListButton_focus")
+ListButtonOuterMargin/base_type = &"MarginContainer"
+ListButtonOuterMargin/constants/margin_bottom = 2
+ListButtonOuterMargin/constants/margin_left = 0
+ListButtonOuterMargin/constants/margin_right = 0
+ListButtonOuterMargin/constants/margin_top = 0
+ListPanelContainer/base_type = &"PanelContainer"
+ListPanelContainer/styles/panel = SubResource("ListPanel_panel")
+ListSectionInnerMargin/base_type = &"MarginContainer"
+ListSectionInnerMargin/constants/margin_bottom = 0
+ListSectionInnerMargin/constants/margin_left = 0
+ListSectionInnerMargin/constants/margin_right = 0
+ListSectionInnerMargin/constants/margin_top = 0
+ListSectionOuterMargin/base_type = &"MarginContainer"
+ListSectionOuterMargin/constants/margin_bottom = 20
+ListSectionOuterMargin/constants/margin_left = 0
+ListSectionOuterMargin/constants/margin_right = 6
+ListSectionOuterMargin/constants/margin_top = 4
+SongoGrayInputPanel/base_type = &"PanelContainer"
+SongoGrayInputPanel/styles/panel = SubResource("GrayInput_panel")
+SongoPanel/base_type = &"PanelContainer"
+SongoPanel/styles/panel = SubResource("SongoPanel_panel")
+SongoSettingsButton/base_type = &"Button"
+SongoSettingsButton/colors/font_color = Color(1, 1, 1, 1)
+SongoSettingsButton/colors/font_disabled_color = Color(0.368627, 0.384314, 0.435294, 1)
+SongoSettingsButton/colors/font_focus_color = Color(1, 1, 1, 1)
+SongoSettingsButton/colors/font_hover_color = Color(1, 1, 1, 1)
+SongoSettingsButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+SongoSettingsButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+SongoSettingsButton/colors/icon_focus_color = Color(1, 1, 1, 1)
+SongoSettingsButton/colors/icon_normal_color = Color(1, 1, 1, 1)
+SongoSettingsButton/fonts/font = ExtResource("2_semibold")
+SongoSettingsButton/styles/disabled = SubResource("Settings_disabled")
+SongoSettingsButton/styles/focus = SubResource("Settings_focus")
+SongoSettingsButton/styles/hover = SubResource("Settings_normal")
+SongoSettingsButton/styles/normal = SubResource("Settings_normal")
+SongoSettingsButton/styles/pressed = SubResource("Settings_focus")
+SongoSettingsLabel/base_type = &"Label"
+SongoSettingsLabel/colors/font_color = Color(1, 1, 1, 1)
+SongoSettingsLabel/colors/font_shadow_color = Color(0, 0, 0, 0)
+SongoSettingsLabel/fonts/font = ExtResource("1_font")
+SongoSettingsLabel/styles/normal = SubResource("SettingsLabel_normal")
+VScrollBar/styles/grabber = SubResource("Scroll_grabber")
+VScrollBar/styles/grabber_highlight = SubResource("Scroll_grabber_highlight")
+VScrollBar/styles/grabber_pressed = SubResource("Scroll_grabber_highlight")
+VScrollBar/styles/scroll = SubResource("Scroll_rail")
+VScrollBar/styles/scroll_focus = SubResource("Scroll_rail")
