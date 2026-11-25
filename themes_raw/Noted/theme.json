@@ -16,11 +16,7 @@
 		"collection_button": "collection_button/collection_button.tscn",
 		"collection_header": "collection_header/collection_header.tscn"
 	},
-	"tags": [
-		"minimal",
-		"og",
-		"light"
-	],
+	"tags": ["minimal", "light"],
 	"settings": {
 		"wobble": {
 			"values": [true, false],

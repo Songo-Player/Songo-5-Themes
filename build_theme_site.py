@@ -27,8 +27,8 @@ byte for byte the same.
 
 With --releases (the file publish_releases.py writes), themes are downloaded
 from their GitHub releases instead: the page links to the release files, zips
-none itself, and shows each theme's download count (adding one straight away
-when Theme is clicked).
+none itself, and shows each theme's download count (brought up to date from
+GitHub as the page opens, and adding one straight away when Theme is clicked).
 
 Publishing is automatic: the repo's GitHub Actions workflow
 (.github/workflows/publish.yml) releases new and updated themes and deploys
@@ -624,21 +624,78 @@ PAGE_JS = """
 """
 
 
-# Download counts: built into the page, which the workflow rebuilds every hour.
-# Clicking Theme adds one straight away, so the click shows.
-COUNT_JS = """
+# Download counts: built into the page, then brought up to date from GitHub's
+# releases (added up as publish_releases.py's total_downloads does). GitHub
+# allows 60 of these requests an hour, so the answer, or a failure, is kept for
+# 10 minutes; without one the built-in counts stay. Counts only ever go up, so
+# the higher one shows. Clicking Theme adds one straight away.
+COUNT_JS = r"""
 (function () {
-  document.addEventListener('click', function (event) {
-    var link = event.target.closest('a.download[data-asset]');
-    if (!link) return;
+  var REPO = __REPO__;
+  var KEEP_MS = 10 * 60 * 1000;
+  var MAX_PAGES = 5;
+  var CACHE_KEY = 'songo-theme-counts:' + REPO;
+
+  function eachCounter(asset, change) {
     Array.prototype.forEach.call(document.querySelectorAll('.dl-count'), function (counter) {
-      if (counter.dataset.asset !== link.dataset.asset) return;
-      var n = (Number(counter.textContent.replace(/[^0-9]/g, '')) || 0) + 1;
+      if (counter.dataset.asset !== asset) return;
+      var old = Number(counter.textContent.replace(/[^0-9]/g, '')) || 0;
+      var n = change(old);
       counter.textContent = n.toLocaleString('en-US');
       var unit = counter.parentNode.querySelector('.dl-unit');
       if (unit) unit.textContent = n === 1 ? 'time' : 'times';
     });
+  }
+
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest('a.download[data-asset]');
+    if (link) eachCounter(link.dataset.asset, function (n) { return n + 1; });
   });
+
+  function total(release, id) {
+    var match = /<!-- songo-theme: (\{[\s\S]*?\}) -->/.exec(release.body || '');
+    var meta = match ? JSON.parse(match[1]) : {};
+    var counts = Object.assign({}, meta.retired);
+    release.assets.forEach(function (a) {
+      if (a.name === id + '.zip' || a.id in counts) counts[a.id] = Math.max(a.download_count, counts[a.id] || 0);
+    });
+    return Object.keys(counts).reduce(function (sum, key) { return sum + counts[key]; }, meta.carried || 0);
+  }
+
+  function show(counts) {
+    Object.keys(counts).forEach(function (id) {
+      eachCounter(id + '.zip', function (n) { return Math.max(n, counts[id]); });
+    });
+  }
+
+  function load(page, counts) {
+    return fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=100&page=' + page)
+      .then(function (response) {
+        if (!response.ok) throw new Error('GitHub answered ' + response.status);
+        return response.json();
+      })
+      .then(function (releases) {
+        releases.forEach(function (release) {
+          if (release.tag_name.indexOf('theme-') !== 0) return;
+          var id = release.tag_name.slice(6);
+          try { counts[id] = total(release, id); } catch (e) { /* keep the built-in count */ }
+        });
+        return releases.length === 100 && page < MAX_PAGES ? load(page + 1, counts) : counts;
+      });
+  }
+
+  function save(counts) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), counts: counts })); } catch (e) {}
+  }
+
+  if (!REPO || !window.fetch) return;
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) {}
+  var known = (cached && cached.counts) || {};
+  show(known);
+  var age = cached ? Date.now() - cached.at : -1;
+  if (age >= 0 && age < KEEP_MS) return;
+  load(1, {}).then(function (counts) { save(counts); show(counts); }, function () { save(known); });
 })();
 """
 
@@ -675,7 +732,7 @@ def render_filters(themes: list) -> str:
   </section>"""
 
 
-def render_page(themes: list, title: str, intro: str, repo_url: str) -> str:
+def render_page(themes: list, title: str, intro: str, repo_url: str, releases_repo: str = "") -> str:
     cards = "".join(render_card(t) for t in themes)
     filters = render_filters(themes)
     # The page's title, in the top bar like the app's own header. It links to
@@ -685,6 +742,7 @@ def render_page(themes: list, title: str, intro: str, repo_url: str) -> str:
     count = len(themes)
     plural = "s" if count != 1 else ""
     built = datetime.date.today().isoformat()
+    count_js = COUNT_JS.replace("__REPO__", json.dumps(releases_repo).replace("<", "\\u003c"))
 
     return f"""<!doctype html>
 <html lang="en">
@@ -727,7 +785,7 @@ def render_page(themes: list, title: str, intro: str, repo_url: str) -> str:
   <span class="built">Built {built} &middot; <a href="themes.json">themes.json</a></span>
 </footer>
 <script>{PAGE_JS}</script>
-<script>{COUNT_JS}</script>
+<script>{count_js}</script>
 </body>
 </html>
 """
@@ -809,9 +867,10 @@ def main() -> int:
         shutil.rmtree(assets)
     assets.mkdir(parents=True)
 
-    released = {}
+    released, releases_repo = {}, ""
     if args.releases:
-        released = json.loads(args.releases.read_text(encoding="utf-8")).get("themes", {})
+        details = json.loads(args.releases.read_text(encoding="utf-8"))
+        released, releases_repo = details.get("themes", {}), details.get("repo", "")
 
     for theme in themes:
         if theme["has_preview"]:
@@ -841,7 +900,7 @@ def main() -> int:
         where = f", from {theme['release']}, {theme['downloads']} downloads" if theme.get("release") else ""
         print(f"  {theme['id']}: {theme['name']} {theme['version']} ({theme['zip_size_text']}{source}{where})")
 
-    (out / "index.html").write_text(render_page(themes, args.title, args.intro, args.repo_url),
+    (out / "index.html").write_text(render_page(themes, args.title, args.intro, args.repo_url, releases_repo),
                                     encoding="utf-8")
     (out / "themes.json").write_text(json.dumps({"themes": [manifest_entry(t) for t in themes]},
                                                 indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

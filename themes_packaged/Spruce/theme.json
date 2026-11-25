@@ -5,7 +5,7 @@
 	"author": "a fella",
 	"co_authors": ["Robot (AI)"],
 	"ai_usage": 3,
-	"description": "Songo dressed up as spruceOS: warm Gruvbox darks, outlined icons that light up yellow and green, an orange-edged selection and yellow button hints. Made for our friends at spruceUI.",
+	"description": "Songo dressed up as spruceOS. Made for our friends at spruceUI.",
 	"components": {
 		"background_root": "background_root/background_root.tscn",
 		"header": "header/header.tscn",

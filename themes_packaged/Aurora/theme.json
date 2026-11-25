@@ -7,7 +7,7 @@
 		"Robot (AI)"
 	],
 	"ai_usage": 3,
-	"description": "Songo in the style of Aurora, Rosabel's theme for muOS: a deep navy screen, rounded pills and panels, and a sliding row of bright gradient cards for the main menu, with Settings and Exit as buttons underneath.",
+	"description": "Songo in the style of Aurora, Rosabel's theme for muOS",
 	"components": {
 		"background_root": "background_root/background_root.tscn",
 		"header": "header/header.tscn",

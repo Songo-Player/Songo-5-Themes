@@ -53,10 +53,11 @@ On every push to `main`, and once an hour, the workflow:
 
 **Download counts:**
 - **What's counted:** a theme's count is how many times `<Theme>.zip` has been downloaded, across every version. Source downloads aren't counted.
-- **How counts survive updates:** GitHub restarts a file's count at 0 when it's replaced. So before replacing a zip, the workflow writes that zip's count into the release notes, in a hidden `songo-theme` comment, and adds it to the total. Don't edit that comment by hand, or the counts are lost.
+- **How counts survive updates:** GitHub restarts a file's count at 0 when it's replaced. So when replacing a zip, the workflow writes that zip's count into the release notes, in a hidden `songo-theme` comment, and adds it to the total. Don't edit that comment by hand, or the counts are lost.
+- **Late counts:** GitHub can count a download 10 minutes or more late, so the replaced zip stays in the release as `<Theme>.old-<id>.zip` and goes on counting. The first run after a day writes down its final count and deletes it.
 - **Interrupted runs:** if a run stops partway through an update, the next run finishes it without losing or double counting anything.
-- **Where counts show:** the page shows "Downloaded N times" above each theme's download buttons. The count updates hourly, and clicking Theme adds one on the page straight away.
-- **Theme browsers:** `themes.json` on the page lists every theme with its release links and download count. Apps like theme browsers in Songo can download from those links and are counted the same way.
+- **Where counts show:** the page shows "Downloaded N times" above each theme's download buttons. The page and Songo's Theme Downloader fetch current counts from GitHub's API, keep them for 10 minutes, and fall back to the counts from the last deploy. Clicking Theme adds one on the page straight away.
+- **Theme browsers:** `themes.json` on the page lists every theme with its release links and its download count as of the last deploy. Apps like theme browsers in Songo can download from those links and are counted the same way.
 
 **Limits:**
 - **Paced updates:** GitHub limits how fast releases can be created, so a run updates at most 40 themes (`--max-updates`). Any others wait for the next run and are listed as a warning on it.

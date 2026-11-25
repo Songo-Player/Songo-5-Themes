@@ -15,6 +15,8 @@ title and notes updated to the new version. Old versions aren't kept.
 A theme's download count is how many times <Dir>.zip has been downloaded,
 across every version. GitHub's count starts again at 0 for a replaced file,
 so the count of each replaced file is kept in the release notes and added on.
+GitHub also counts downloads some minutes late, so a replaced zip stays in the
+release for a day as <Dir>.old-<id>.zip, until its count has settled.
 Source downloads aren't counted.
 
 Changes are spotted by comparing each theme folder's git tree hash (or, for a
@@ -35,6 +37,7 @@ Usage (Python 3.8+, standard library only):
 """
 
 import argparse
+import datetime
 import hashlib
 import json
 import re
@@ -57,6 +60,14 @@ META_RE = re.compile(r"<!-- songo-theme: (\{.*?\}) -->", re.S)
 # out and a run updates at most --max-updates themes; the rest wait for the
 # next run.
 WRITE_PAUSE = 1.0
+
+# How long a replaced zip is kept, in seconds. GitHub has been seen to count
+# downloads about 10 minutes late; a deleted file's late ones would be lost.
+RETIRED_KEEP = 24 * 60 * 60
+
+
+def now() -> int:
+    return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
 
 
 def warn(title: str, message: str) -> None:
@@ -132,6 +143,8 @@ def read_meta(release: dict) -> dict:
     meta.setdefault("carried", 0)
     # Files being replaced: asset id -> its download count when last seen.
     meta["retired"] = {int(k): v for k, v in meta.get("retired", {}).items()}
+    # When each was replaced, in seconds since 1970.
+    meta["retired_at"] = {int(k): v for k, v in meta.get("retired_at", {}).items()}
     return meta
 
 
@@ -140,12 +153,17 @@ def fold_retired(meta: dict, assets: list) -> None:
     present = {a["id"] for a in assets}
     for asset_id in [i for i in meta["retired"] if i not in present]:
         meta["carried"] += meta["retired"].pop(asset_id)
+        meta["retired_at"].pop(asset_id, None)
 
 
 def total_downloads(theme_id: str, meta: dict, assets: list) -> int:
-    live = sum(a["download_count"] for a in assets if a["name"] == f"{theme_id}.zip")
-    gone = sum(count for asset_id, count in meta["retired"].items() if asset_id not in {a["id"] for a in assets})
-    return meta["carried"] + gone + live
+    # The page's COUNT_JS and the Theme Downloader plugin add it up the same way.
+    live = {a["id"]: a["download_count"] for a in assets
+            if a["name"] == f"{theme_id}.zip" or a["id"] in meta["retired"]}
+    counts = dict(meta["retired"])
+    for asset_id, count in live.items():
+        counts[asset_id] = max(count, counts.get(asset_id, 0))
+    return meta["carried"] + sum(counts.values())
 
 
 def release_notes(theme: dict, meta: dict, site_url: str) -> str:
@@ -164,7 +182,7 @@ def release_notes(theme: dict, meta: dict, site_url: str) -> str:
                   "is updated."]
     if site_url:
         lines += ["", f"All themes: {site_url}"]
-    stored = dict(meta, retired={str(k): v for k, v in meta["retired"].items()})
+    stored = dict(meta, **{key: {str(k): v for k, v in meta[key].items()} for key in ("retired", "retired_at")})
     lines += ["", f"<!-- songo-theme: {json.dumps(stored, sort_keys=True)} -->", ""]
     return "\n".join(lines)
 
@@ -177,8 +195,9 @@ def replace_asset(github: GitHub, release: dict, meta: dict, theme: dict, path: 
                   counted: bool) -> None:
     """Swaps the release's file called `name` for `path`. The new file goes up
     under a temporary name first and is renamed once the old one is gone, so
-    the link is only missing for a moment. A counted file's download count is
-    written to the release notes before it's deleted, so it's never lost."""
+    the link is only missing for a moment. A counted file isn't deleted but
+    noted in the release notes and renamed, so downloads GitHub hasn't counted
+    yet still reach it; remove_settled deletes it later."""
     assets = release["assets"]
     temp_name = f"{path.stem}.next{path.suffix}"
     for leftover in [a for a in assets if a["name"] == temp_name]:
@@ -191,19 +210,35 @@ def replace_asset(github: GitHub, release: dict, meta: dict, theme: dict, path: 
     old = [a for a in assets if a["name"] == name]
     if counted and old:
         for asset in old:
-            meta["retired"][asset["id"]] = asset["download_count"]
+            meta["retired"][asset["id"]] = max(asset["download_count"], meta["retired"].get(asset["id"], 0))
+            meta["retired_at"][asset["id"]] = now()
         github.edit(release["id"], release["name"], release_notes(theme, meta, ""))
-        # The count may have moved since the listing: take the latest just before deleting.
-        fresh = github.releases().get(release["tag_name"], release) if not github.dry_run else release
-        for asset in fresh["assets"]:
-            if asset["id"] in meta["retired"]:
-                meta["retired"][asset["id"]] = max(meta["retired"][asset["id"]], asset["download_count"])
     for asset in old:
-        github.delete_asset(asset["id"])
+        if counted:
+            github.rename_asset(asset["id"], f"{path.stem}.old-{asset['id']}{path.suffix}")
+        else:
+            github.delete_asset(asset["id"])
     if not github.dry_run:
         uploaded = [a for a in github.releases()[release["tag_name"]]["assets"] if a["name"] == temp_name]
         for asset in uploaded:
             github.rename_asset(asset["id"], name)
+
+
+def remove_settled(github: GitHub, release: dict, meta: dict, theme: dict, site_url: str) -> None:
+    """Deletes replaced zips whose counts have had time to settle, writing the
+    final counts to the release notes first."""
+    settled = [a for a in release["assets"] if a["id"] in meta["retired"] and a["name"] != f"{theme['id']}.zip"
+               and now() - meta["retired_at"].get(a["id"], 0) >= RETIRED_KEEP]
+    if not settled:
+        return
+    for asset in settled:
+        meta["retired"][asset["id"]] = max(asset["download_count"], meta["retired"][asset["id"]])
+    print(f"  {release['tag_name']}: removing {', '.join(a['name'] for a in settled)}")
+    github.edit(release["id"], release["name"], release_notes(theme, meta, site_url))
+    for asset in settled:
+        github.delete_asset(asset["id"])
+    release["assets"] = [a for a in release["assets"] if a not in settled]
+    fold_retired(meta, release["assets"])
 
 
 def main() -> int:
@@ -237,9 +272,10 @@ def main() -> int:
             theme_id = theme["id"]
             tag = TAG_PREFIX + theme_id
             release = releases.get(tag)
-            meta = read_meta(release) if release else {"carried": 0, "retired": {}}
+            meta = read_meta(release) if release else {"carried": 0, "retired": {}, "retired_at": {}}
             if release:
                 fold_retired(meta, release["assets"])
+                remove_settled(github, release, meta, theme, args.site_url)
 
             # What's in the folders now, from git where possible; zipped only
             # when that can't say, or when the files have to go up.
@@ -300,7 +336,7 @@ def main() -> int:
     if deferred:
         warn("Themes waiting", f"{len(deferred)} themes left for the next run (--max-updates {args.max_updates}): "
                                + ", ".join(deferred))
-    if updates and not args.dry_run:
+    if not args.dry_run:
         releases = github.releases()
 
     for theme_id, detail in list(details.items()):

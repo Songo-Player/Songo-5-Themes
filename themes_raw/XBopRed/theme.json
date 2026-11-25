@@ -16,11 +16,7 @@
 		"collection_button": "collection_button/collection_button.tscn",
 		"collection_header": "collection_header/collection_header.tscn"
 	},
-	"tags": [
-		"minimal",
-		"og",
-		"dark"
-	],
+	"tags": ["minimal", "dark"],
 	"settings": {
 		"clock_24_hour": {
 			"values": [true, false],
