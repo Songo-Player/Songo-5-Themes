@@ -83,3 +83,8 @@ This needs the GitHub CLI (`gh`), signed in. Both scripts need only Python 3.8 o
 
 ## AI Usage Disclosure (2 out of 5 🤖)
 Getting the github automations right was largely something claude did, the basic html page layout was also done with light claude work 
+
+## License
+Songo-5-Themes Copyright (C) 2025-2026 Riley Cleary and the themes' authors
+
+Songo-5-Themes is licensed under the GNU General Public License version 3. See [LICENSE.txt](LICENSE.txt). Third-party assets (fonts, icons, images and other artwork) remain under their own licenses, see each theme's `CREDITS.md` where it has one. For example, the Spruce theme's spruce tree is spruceOS artwork under CC BY-NC 4.0, and isn't covered by the GPL.
